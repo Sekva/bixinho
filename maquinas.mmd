@@ -1,0 +1,92 @@
+---
+config:
+  theme: dark
+  layout: elk
+  look: classic
+---
+stateDiagram
+  direction TB
+  state Evolucao {
+    direction TB
+    Ovo --> Bebe:2h + cuidados OK
+    Bebe --> Crescimento:24h + CM<3
+    Crescimento --> Adulto:48h + perfil
+    Adulto --> Elevado:96h + critérios
+    Elevado --> Absoluto:168h + desafios
+    state Adulto {
+      direction TB
+      [*] --> Adulto_Normal
+      Adulto_Normal --> Adulto_Desordeiro:Bravo
+      Adulto_Normal --> Adulto_Virtuoso:Diligente
+      Adulto_Normal --> Adulto_Degenerado:Negligênciado
+    }
+  }
+  state Saude {
+    direction TB
+    [*] --> Saudavel
+    Saudavel --> Doente:Faminto por 2h
+    Saudavel --> Doente:Exausto por 1h
+    Saudavel --> Doente:Sujismundo por 4h
+    Saudavel --> Doente:Saude < 40
+    Doente --> Critico:Saúde < 20
+    Critico --> Doente:Saúde >= 20
+    Doente --> Saudavel:Remediado & saude > 40 & satisfeito
+    Critico --> Morto:Saúde = 0
+    Morto --> [*]
+  }
+  state Humor {
+    direction TB
+    [*] --> Normal
+    Normal --> Feliz:Fome>80 & Felic>80 & Higiene>80
+    Normal --> Irritado:Fome<30 OU Felic<30
+    Feliz --> Normal:Fome≤80 OU Felic≤80
+    Irritado --> Normal:Fome>50 & Felic>50 (2h)
+    Irritado --> Triste:Fome<15 OU Felic<15 (2h)
+    Triste --> Irritado:Fome>30 & Felic>30 (3h)
+  }
+  state Conforto {
+    direction TB
+    [*] --> Satisfeito
+    Satisfeito --> Desconforvel:Doente
+    Desconforvel --> Satisfeito:Carregado, Buxinxei e Limpo por 2h
+  }
+  state Energia {
+    direction TB
+    [*] --> Carregado
+    Carregado --> ComSono:Energia<20
+    ComSono --> Carregado:Energia>=80
+    ComSono --> Exausto:Energia=0 (30min)
+    Exausto --> Carregado:Energia>=80
+  }
+  state Nutricao {
+    direction TB
+    [*] --> Buxinxei
+    Buxinxei --> ComFome:Fome<30
+    ComFome --> Faminto:Fome=0 (1h)
+    Faminto --> Buxinxei:Fome>=70
+    ComFome --> Buxinxei:Fome>=70
+  }
+  state Limpeza {
+    direction TB
+    [*] --> Limpo
+    Limpo --> Sujo:Higiene<30
+    Sujo --> Sujismundo:Higiene=0 (2h)
+    Sujismundo --> Limpo:Higiene>=80
+    Sujo --> Limpo:Higiene>=80
+  }
+  state Perfil {
+    direction TB
+    [*] --> Balanceado
+    Balanceado --> Bravo:Batalhas > Treinos+10
+    Balanceado --> Diligente:CM<2 & Limpezas>20
+    Balanceado --> Negligenciado:CM>10
+    Bravo --> Balanceado:Batalhas ≤ Treinos+5
+    Diligente --> Balanceado:CM≥2 OU Limpezas≤15
+    Negligenciado --> Balanceado:CM<5 por 48h
+  }
+  [*] --> Ovo
+  Morto --> Ovo:Renascer
+  note right of Triste : saúde -= 10 por hora
+  note right of Doente : saúde -= 10 por hora
+  note right of Critico : saúde -= 10 por hora
+  Critico
