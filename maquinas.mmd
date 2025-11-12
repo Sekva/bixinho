@@ -5,16 +5,13 @@ config:
   look: classic
 ---
 stateDiagram
-  direction TB
   state Evolucao {
-    direction TB
     Ovo --> Bebe:2h + cuidados OK
     Bebe --> Crescimento:24h + CM<3
     Crescimento --> Adulto:48h + perfil
     Adulto --> Elevado:96h + critérios
     Elevado --> Absoluto:168h + desafios
     state Adulto {
-      direction TB
       [*] --> Adulto_Normal
       Adulto_Normal --> Adulto_Desordeiro:Bravo
       Adulto_Normal --> Adulto_Virtuoso:Diligente
@@ -22,7 +19,6 @@ stateDiagram
     }
   }
   state Saude {
-    direction TB
     [*] --> Saudavel
     Saudavel --> Doente:Faminto por 2h
     Saudavel --> Doente:Exausto por 1h
@@ -35,7 +31,6 @@ stateDiagram
     Morto --> [*]
   }
   state Humor {
-    direction TB
     [*] --> Normal
     Normal --> Feliz:Fome>80 & Felic>80 & Higiene>80
     Normal --> Irritado:Fome<30 OU Felic<30
@@ -45,13 +40,11 @@ stateDiagram
     Triste --> Irritado:Fome>30 & Felic>30 (3h)
   }
   state Conforto {
-    direction TB
     [*] --> Satisfeito
     Satisfeito --> Desconforvel:Doente
     Desconforvel --> Satisfeito:Carregado, Buxinxei e Limpo por 2h
   }
   state Energia {
-    direction TB
     [*] --> Carregado
     Carregado --> ComSono:Energia<20
     ComSono --> Carregado:Energia>=80
@@ -59,7 +52,6 @@ stateDiagram
     Exausto --> Carregado:Energia>=80
   }
   state Nutricao {
-    direction TB
     [*] --> Buxinxei
     Buxinxei --> ComFome:Fome<30
     ComFome --> Faminto:Fome=0 (1h)
@@ -67,7 +59,6 @@ stateDiagram
     ComFome --> Buxinxei:Fome>=70
   }
   state Limpeza {
-    direction TB
     [*] --> Limpo
     Limpo --> Sujo:Higiene<30
     Sujo --> Sujismundo:Higiene=0 (2h)
@@ -75,7 +66,6 @@ stateDiagram
     Sujo --> Limpo:Higiene>=80
   }
   state Perfil {
-    direction TB
     [*] --> Balanceado
     Balanceado --> Bravo:Batalhas > Treinos+10
     Balanceado --> Diligente:CM<2 & Limpezas>20

@@ -1,8 +1,6 @@
-import {SistemaCuidado} from './lib/sistema_cuidado';
+import { Bixinho } from "../lib/bixinho";
 
 
-let a: SistemaCuidado = new SistemaCuidado();
+let bixinho  = new Bixinho();
 
-
-console.log("Hello via Bun!");
-console.log(a);
+console.log(bixinho);
