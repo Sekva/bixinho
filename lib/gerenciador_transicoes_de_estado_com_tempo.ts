@@ -47,7 +47,7 @@ export class GerenciadorTransicoesComTempo<T extends string | number | symbol> {
             this.setar_tempo_transicao_passado(de, para, 0);
         }
 
-        return (tempo_passado_na_condicao - Date.now() >= tempo_para_prox * 1000) && condicao;
+        return ((Date.now() - tempo_passado_na_condicao) >= tempo_para_prox * 1000) && condicao;
     }
 
 
