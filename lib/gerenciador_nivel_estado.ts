@@ -1,7 +1,7 @@
 import {GerenciadorTransicoesComTempo} from './gerenciador_transicoes_de_estado_com_tempo'
 import {Bixinho} from './bixinho';
 
-export abstract class GerenciadorNivelEstado<T extends number> {
+export abstract class GerenciadorNivelEstado<T extends number | string> {
 
     protected gerenciador_transicoes_com_tempo: GerenciadorTransicoesComTempo<T>;
     private _estado_atual: T;

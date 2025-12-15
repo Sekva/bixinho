@@ -6,14 +6,14 @@ import { EstadoHigiene } from './higiene';
 import { EstadoNutricao } from './nutricao';
 
 export enum  EstadoSaude {
-    Saudavel,
-    Doente,
-    Critico,
-    Morto,
+    Saudavel = "Saudavel",
+    Doente = "Doente",
+    Critico = "Crítico",
+    Morto = "Morto",
 
-    DoenteFaminto,
-    DoenteExausto,
-    DoenteSujismundo
+    DoenteFaminto = "DoenteFaminto",
+    DoenteExausto = "DoenteExausto",
+    DoenteSujismundo = "DoenteSujismundo"
 }
 
 export class GerenciadorSaude extends GerenciadorNivelEstado<EstadoSaude> {

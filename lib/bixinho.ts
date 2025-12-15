@@ -7,6 +7,11 @@ import { GerenciadorSaude } from './saude';
 import { GerenciadorConforto } from './conforto';
 import { SistemaCuidado } from './sistema_cuidado';
 
+
+export enum Marca {
+    OXOLOTE
+}
+
 export class Bixinho {
     nome: string;
     estagio: Estagio;
@@ -25,8 +30,11 @@ export class Bixinho {
     saude: GerenciadorSaude;
     conforto: GerenciadorConforto;
 
-    constructor() {
-        this.nome = "";
+
+    marca: Marca;
+
+    constructor(nome: string) {
+        this.nome = nome;
         this.estagio = Estagio.Ovo;
         this.idade = 0;
 
@@ -41,5 +49,7 @@ export class Bixinho {
         this.higiene = new GerenciadorHigiene();
         this.saude = new GerenciadorSaude();
         this.conforto = new GerenciadorConforto();
+
+        this.marca = Marca.OXOLOTE;
     }
 }

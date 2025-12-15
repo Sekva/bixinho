@@ -2,10 +2,10 @@ import { Bixinho } from './bixinho';
 import { GerenciadorNivelEstado } from './gerenciador_nivel_estado';
 
 export enum EstadoHumor {
-    Normal,
-    Feliz,
-    Irritado,
-    Triste
+    Normal = "Normal",
+    Feliz = "Feliz",
+    Irritado = "Irritado",
+    Triste = "Triste"
 }
 
 export class GerenciadorHumor  extends GerenciadorNivelEstado<EstadoHumor> {

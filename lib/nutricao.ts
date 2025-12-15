@@ -2,9 +2,9 @@ import {Bixinho} from './bixinho';
 import { GerenciadorNivelEstado } from './gerenciador_nivel_estado';
 
 export enum EstadoNutricao {
-    Buxinxei,
-    ComFome,
-    Faminto
+    Buxinxei = "Buxinxei",
+    ComFome = "Com Fome",
+    Faminto = "Faminto"
 }
 
 export class GerenciadorNutricao extends GerenciadorNivelEstado<EstadoNutricao> {

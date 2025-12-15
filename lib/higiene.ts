@@ -2,9 +2,9 @@ import {Bixinho} from './bixinho';
 import { GerenciadorNivelEstado } from './gerenciador_nivel_estado';
 
 export enum EstadoHigiene {
-    Limpo,
-    Sujo,
-    Sujismundo
+    Limpo = "Limpo",
+    Sujo = "Sujo",
+    Sujismundo = "Sujismundo"
 }
 
 export class GerenciadorHigiene extends GerenciadorNivelEstado<EstadoHigiene> {
