@@ -23,23 +23,6 @@ const raylib: Raylib = wrapRaylib(symbols);
 raylib.InitWindow(largura * escala, altura * escala, "oi");
 raylib.SetTargetFPS(fps);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const base_fundo = new TexturaRaylib(raylib, "recursos/imagens/bichov/base.PNG");
 const botao_saude = new BotaoRaylib(raylib, "recursos/imagens/bichov/interface/saude.PNG", 0xFFFFFFFF, 0xACFFFFFF);
 const botao_higiene = new BotaoRaylib(raylib, "recursos/imagens/bichov/interface/higiene.PNG", 0xFFFFFFFF, 0xACFFFFFF);
@@ -52,13 +35,27 @@ while(!raylib.WindowShouldClose()) {
     mousey = raylib.GetMouseY();
 
     raylib.BeginDrawing();
+
+
+
     raylib.ClearBackground(0xFFFFFFFF);
-    base_fundo.desenhar(raylib, 0, 0, escala, 0, 0xFFFFFFFF);
-    animacao_cabelo.desenhar(raylib, 0, 21, escala, 0, 0xFFFFFFFF);
-    botao_saude.desenhar(raylib, 0, 57,escala, 0, botao_saude.mouse_dentro(raylib, mousex, mousey));
-    botao_higiene.desenhar(raylib, 0, 71,escala, 0, botao_higiene.mouse_dentro(raylib, mousex, mousey));
-    botao_energia.desenhar(raylib, 0, 85,escala, 0, botao_energia.mouse_dentro(raylib, mousex, mousey));
+    // base_fundo.desenhar(raylib, 0, 0, escala, 0, 0xFFFFFFFF);
+    // animacao_cabelo.desenhar(raylib, 0, 21, escala, 0, 0xFFFFFFFF);
+    // botao_saude.desenhar(raylib, 0, 57,escala, 0, botao_saude.mouse_dentro(raylib, mousex, mousey));
+    // botao_higiene.desenhar(raylib, 0, 71,escala, 0, botao_higiene.mouse_dentro(raylib, mousex, mousey));
+    // botao_energia.desenhar(raylib, 0, 85,escala, 0, botao_energia.mouse_dentro(raylib, mousex, mousey));
+
+
+
+    raylib.DrawText("asd", 0, 0, 20, 0xFF000000);
+
+
     raylib.EndDrawing();
+
+
+
+
+
 
     animacao_cabelo.update();
 }

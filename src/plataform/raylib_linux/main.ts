@@ -44,7 +44,7 @@ export const raylib_interface = {
 
     DrawText: {
         args:[FFIType.cstring, FFIType.i32, FFIType.i32, FFIType.i32, FFIType.u32],
-        return: FFIType.void
+        returns: FFIType.void
     },
 
     DirectoryExists: {
@@ -84,6 +84,7 @@ export const raylib_interface = {
         args: [FFIType.ptr],
         returns: FFIType.i32,
     },
+
     TextureGetHeight: {
         args: [FFIType.ptr],
         returns: FFIType.i32,
