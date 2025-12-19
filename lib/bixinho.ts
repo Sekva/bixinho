@@ -9,7 +9,7 @@ import { SistemaCuidado } from './sistema_cuidado';
 
 
 export enum Marca {
-    OXOLOTE
+    OXOLOTE = "Axolotl"
 }
 
 export class Bixinho {
@@ -35,7 +35,7 @@ export class Bixinho {
 
     constructor(nome: string) {
         this.nome = nome;
-        this.estagio = Estagio.Ovo;
+        this.estagio = Estagio.Adulto_Normal;
         this.idade = 0;
 
         this.treinos = 0;

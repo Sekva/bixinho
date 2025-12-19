@@ -2,7 +2,7 @@ import { Bixinho } from './bixinho';
 import { GerenciadorNivelEstado } from './gerenciador_nivel_estado';
 
 export enum EstadoHumor {
-    Normal = "Normal",
+    Tranquilo = "Tranquilo",
     Feliz = "Feliz",
     Irritado = "Irritado",
     Triste = "Triste"
@@ -19,12 +19,12 @@ export class GerenciadorHumor  extends GerenciadorNivelEstado<EstadoHumor> {
             return EstadoHumor.Irritado;
         }
 
-        return EstadoHumor.Normal;
+        return EstadoHumor.Tranquilo;
     }
 
     avancar_estado_feliz(bixinho: Readonly<Bixinho>): EstadoHumor {
         if(bixinho.nutricao.nivel() <= 80 || this.nivel() <= 80) {
-            return EstadoHumor.Normal;
+            return EstadoHumor.Tranquilo;
         }
 
         return EstadoHumor.Feliz;
@@ -32,8 +32,8 @@ export class GerenciadorHumor  extends GerenciadorNivelEstado<EstadoHumor> {
 
     avancar_estado_irritado(bixinho: Readonly<Bixinho>): EstadoHumor {
         // Irritado -> Normal
-        if(this.gerenciador_transicoes_com_tempo.verificar_tempo_no_estado(EstadoHumor.Irritado, EstadoHumor.Normal, (bixinho.nutricao.nivel() > 50 && this.nivel() > 50))) {
-            return EstadoHumor.Normal;
+        if(this.gerenciador_transicoes_com_tempo.verificar_tempo_no_estado(EstadoHumor.Irritado, EstadoHumor.Tranquilo, (bixinho.nutricao.nivel() > 50 && this.nivel() > 50))) {
+            return EstadoHumor.Tranquilo;
         }
 
         // Irritado -> Triste
@@ -59,7 +59,7 @@ export class GerenciadorHumor  extends GerenciadorNivelEstado<EstadoHumor> {
         let prox = humor_atual;
 
         switch(humor_atual) {
-            case EstadoHumor.Normal: {prox = this.avancar_estado_normal(bixinho);} break;
+            case EstadoHumor.Tranquilo: {prox = this.avancar_estado_normal(bixinho);} break;
             case EstadoHumor.Feliz: {prox = this.avancar_estado_feliz(bixinho);} break;
             case EstadoHumor.Irritado: {prox = this.avancar_estado_irritado(bixinho);} break;
             case EstadoHumor.Triste: {prox = this.avancar_estado_triste(bixinho);} break;
@@ -75,8 +75,8 @@ export class GerenciadorHumor  extends GerenciadorNivelEstado<EstadoHumor> {
 
 
     constructor() {
-        super(EstadoHumor.Normal, 100, [
-            [EstadoHumor.Irritado, EstadoHumor.Normal, 2 * 60 * 60],   // 2 horas
+        super(EstadoHumor.Tranquilo, 100, [
+            [EstadoHumor.Irritado, EstadoHumor.Tranquilo, 2 * 60 * 60],   // 2 horas
             [EstadoHumor.Irritado, EstadoHumor.Triste, 2 * 60 * 60],   // 2 horas
             [EstadoHumor.Triste, EstadoHumor.Irritado, 3 * 60 * 60],   // 3 horas
         ]);

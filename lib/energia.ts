@@ -2,9 +2,9 @@ import {Bixinho} from './bixinho';
 import { GerenciadorNivelEstado } from './gerenciador_nivel_estado';
 
 export enum EstadoEnergia {
-    Carregado,
-    ComSono,
-    Exausto
+    Carregado = "Carregado",
+    ComSono = "ComSono",
+    Exausto = "Exausto"
 }
 
 export class GerenciadorEnergia extends GerenciadorNivelEstado<EstadoEnergia> {

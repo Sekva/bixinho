@@ -1,54 +1,80 @@
-import type { AnimacaoTexturaRaylib, TexturaRaylib } from "../src/plataform/raylib_linux/main";
+import { exit } from "node:process";
+import { AnimacaoTexturaRaylib, type TexturaRaylib } from "../src/plataform/raylib_linux/main";
 import type { Raylib } from "../src/plataform/raylib_linux/raylib.gerada";
-import { Marca } from "./bixinho";
+import { Bixinho, Marca } from "./bixinho";
 import { EstadoEnergia } from "./energia";
+import { Estagio } from "./estagio";
 import { EstadoHigiene } from "./higiene";
-import type { EstadoHumor } from "./humor";
+import { EstadoHumor } from "./humor";
 import { EstadoNutricao } from "./nutricao";
-import type { EstadoSaude } from "./saude";
+import { EstadoSaude } from "./saude";
+import { bixinho_estado, type Estado } from "./utils";
 
-type Estado =
-    | EstadoHigiene
-    | EstadoEnergia
-    | EstadoNutricao
-    | EstadoSaude
-    | EstadoHumor;
+function estados_iguais(a: Estado, b: Estado): boolean {
+    let valores_a = Object.values(a);
+    let valores_b = Object.values(b);
 
-export class GerenciadorTexturas {
-    private marca: Marca;
-    private dict: Record<Estado, TexturaRaylib | AnimacaoTexturaRaylib> = {} as any;
-    private base: string = "recursos/imagens/bichov/ANIMAIS/"
+    if(valores_a.length != valores_b.length) { return false; }
 
-    constructor(raylib: Raylib, marca: Marca) {
-        this.marca = marca;
-
-        switch(this.marca) {
-            case Marca.OXOLOTE: { this.carregar_texturas_oxolote(raylib) }; break;
-        }
+    for(let i = 0; i < valores_a.length; i++) {
+        if(valores_a[i] != "_" && valores_b[i] === "_") { valores_b[i] = valores_a[i]; }
+        if(valores_b[i] != "_" && valores_a[i] === "_") { valores_a[i] = valores_b[i]; }
+        if(valores_a[i] != valores_b[i]) { return false; }
     }
 
-    private carregar_texturas_oxolote(raylib: Raylib): void {
-
-        this.base += "Axolotl/";
-        // normal
+    return true;
+}
 
 
 
-        // tex[EstadoHigiene.LIMPO] = new TexturaRaylib(raylib, "limpo.png");
-        // tex[EstadoHigiene.SUJO] = new TexturaRaylib(raylib, "sujo.png");
+export class GerenciadorTexturas {
+    private readonly base: string = "recursos/imagens/bichov/ANIMAIS/"
+    private animacoes: Map<Estado, AnimacaoTexturaRaylib> = new Map();
+    private detalhes: Map<Estado, AnimacaoTexturaRaylib> = new Map();
 
-        // tex[EstadoEnergia.ACORDADO] = new TexturaRaylib(raylib, "acordado.png");
-        // tex[EstadoEnergia.DORMINDO] = new TexturaRaylib(raylib, "dormindo.png");
+    constructor(
+        private mapa_anims: string[][]
+    ) {}
 
-        // tex[EstadoNutricao.COM_FOME] = new TexturaRaylib(raylib, "fome.png");
-        // tex[EstadoNutricao.CHEIO] = new TexturaRaylib(raylib, "cheio.png");
+    public async load(raylib: Raylib): Promise<GerenciadorTexturas> {
+        for (const partes of this.mapa_anims) {
 
-        // tex[EstadoSaude.BEM] = new TexturaRaylib(raylib, "bem.png");
-        // tex[EstadoSaude.DOENTE] = new TexturaRaylib(raylib, "doente.png");
+            const marca = partes[0] as Marca;
+            const estagio = partes[1] as Estagio;
+            const saude = partes[2] as EstadoSaude;
+            const humor = partes[3] as EstadoHumor;
+            const energia = partes[4] as EstadoEnergia;
+            const nutricao = partes[5] as EstadoNutricao;
+            const higiene = partes[6] as EstadoHigiene;
 
-        // tex[EstadoHumor.FELIZ] = new TexturaRaylib(raylib, "feliz.png");
-        // tex[EstadoHumor.TRISTE] = new TexturaRaylib(raylib, "triste.png");
+            const animacao = partes[7];
 
+            const estado: Estado = {
+                marca,
+                estagio,
+                saude,
+                humor,
+                energia,
+                nutricao,
+                higiene
+            };
+
+            this.animacoes.set(
+                estado,
+                await (new AnimacaoTexturaRaylib(raylib, `${this.base}${animacao}`)).load()
+            );
+        }
+        return this;
+    }
+
+    public pegar_anim(bixinho: Bixinho): AnimacaoTexturaRaylib | undefined {
+
+        for(let [estado, animacao] of this.animacoes) {
+            if (estados_iguais(estado, bixinho_estado(bixinho))) {
+                return animacao;
+            }
+        }
+        return undefined;
     }
 
 }
