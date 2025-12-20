@@ -3,8 +3,13 @@ import { dlopen } from "bun:ffi";
 import type { Raylib } from './plataform/raylib_linux/raylib.gerada';
 import { Bixinho, Marca } from '../lib/bixinho';
 import { GerenciadorTexturas } from '../lib/gerenciador_texturas_bixinho';
-import { bixinho_estado, prox_do_enum } from '../lib/utils';
+import { bixinho_estado, conteudo_arquivo, prox_do_enum } from '../lib/utils';
 import { EstadoNutricao } from '../lib/nutricao';
+import { EstadoHigiene } from '../lib/higiene';
+import { EstadoHumor } from '../lib/humor';
+import { EstadoEnergia } from '../lib/energia';
+import { EstadoSaude } from '../lib/saude';
+import { exit } from 'process';
 
 const largura = 160;
 const altura = 144;
@@ -27,18 +32,20 @@ const botao_saude = new BotaoRaylib(raylib, "recursos/imagens/bichov/interface/s
 const botao_higiene = new BotaoRaylib(raylib, "recursos/imagens/bichov/interface/higiene.PNG", 0xFFFFFFFF, 0xACFFFFFF);
 const botao_energia = new BotaoRaylib(raylib, "recursos/imagens/bichov/interface/energia.PNG", 0xFFFFFFFF, 0xACFFFFFF);
 
-const animacao_cabelo = await (new AnimacaoTexturaRaylib(raylib, "recursos/imagens/bichov/cabelo", 6).load());
-const animacao_liga = await (new AnimacaoTexturaRaylib(raylib, "recursos/imagens/bichov/liga_desliga", 1, false,  -1).load());
-const animacao_desliga = await (new AnimacaoTexturaRaylib(raylib, "recursos/imagens/bichov/liga_desliga", 1, false, 1).load());
+const animacao_cabelo = new AnimacaoTexturaRaylib(raylib, "recursos/imagens/bichov/cabelo", 4);
+const animacao_liga = new AnimacaoTexturaRaylib(raylib, "recursos/imagens/bichov/liga_desliga", 1, false,  -1);
+const animacao_desliga = new AnimacaoTexturaRaylib(raylib, "recursos/imagens/bichov/liga_desliga", 1, false, 1);
 
 let bixinho = new Bixinho("axolote");
-const gerenciador_texturas = await (new GerenciadorTexturas(
-    (await Bun.file("anins.org").text()).split("\n")
+
+let gerenciador_texturas = new GerenciadorTexturas(
+    conteudo_arquivo("anins.org")
+        .split("\n")
         .map((x) => x.trim())
         .filter((x) => x != "")
         .slice(2)
-        .map((x) => x.split("|").map((y) => y.trim()).filter((y) => y != ""))
-)).load(raylib);
+        .map((x) => x.split("|").map((y) => y.trim()).filter((y) => y != "")),
+    raylib);
 
 function animar_ligar_desligar(animacao: AnimacaoTexturaRaylib, raylib: Raylib) {
     while(!animacao.terminada()) {
@@ -63,17 +70,24 @@ function debug(bixinho: Bixinho): Bixinho {
 
     if(raylib.IsKeyReleased(KeyboardKey.KEY_N)) {
         bixinho.nutricao.setar_estado_atual(prox_do_enum(EstadoNutricao, bixinho.nutricao.estado_atual()));
-    } // Nutricao
-    if(raylib.IsKeyReleased(KeyboardKey.KEY_H)) {} // Humor
-    if(raylib.IsKeyReleased(KeyboardKey.KEY_E)) {} // Energia
-    if(raylib.IsKeyReleased(KeyboardKey.KEY_L)) {} // Higiene
-    if(raylib.IsKeyReleased(KeyboardKey.KEY_S)) {} // Saude
+    }
+
+    if(raylib.IsKeyReleased(KeyboardKey.KEY_H)) {
+        bixinho.humor.setar_estado_atual(prox_do_enum(EstadoHumor, bixinho.humor.estado_atual()));
+    }
+
+    if(raylib.IsKeyReleased(KeyboardKey.KEY_E)) {
+        bixinho.energia.setar_estado_atual(prox_do_enum(EstadoEnergia, bixinho.energia.estado_atual()));
+    }
+    if(raylib.IsKeyReleased(KeyboardKey.KEY_L)) {
+        bixinho.higiene.setar_estado_atual(prox_do_enum(EstadoHigiene, bixinho.higiene.estado_atual()));
+    }
+    if(raylib.IsKeyReleased(KeyboardKey.KEY_S)) {
+        bixinho.saude.setar_estado_atual(prox_do_enum(EstadoSaude, bixinho.saude.estado_atual()));
+    }
 
     return bixinho;
 }
-
-
-
 
 function desenhar_interface() {
     base_fundo.desenhar(raylib, 0, 0, escala, 0, 0xFFFFFFFF);

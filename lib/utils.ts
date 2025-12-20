@@ -1,3 +1,4 @@
+import { readFileSync } from "fs";
 import type { Bixinho, Marca } from "./bixinho";
 import type { EstadoEnergia } from "./energia";
 import type { Estagio } from "./estagio";
@@ -63,4 +64,8 @@ export function prox_do_enum<T extends object>(enumObj: T, atual: any): T[keyof 
         return atual;
     }
     return ret;
+}
+
+export function conteudo_arquivo(arquivo: string): string {
+    return readFileSync(arquivo).toString();
 }

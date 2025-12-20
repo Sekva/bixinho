@@ -30,15 +30,13 @@ function estados_iguais(a: Estado, b: Estado): boolean {
 export class GerenciadorTexturas {
     private readonly base: string = "recursos/imagens/bichov/ANIMAIS/"
     private animacoes: Map<Estado, AnimacaoTexturaRaylib> = new Map();
-    private detalhes: Map<Estado, AnimacaoTexturaRaylib> = new Map();
+    private detalhes: Map<Estado, TexturaRaylib> = new Map();
 
     constructor(
-        private mapa_anims: string[][]
-    ) {}
-
-    public async load(raylib: Raylib): Promise<GerenciadorTexturas> {
+        private mapa_anims: string[][],
+        raylib: Raylib
+    ) {
         for (const partes of this.mapa_anims) {
-
             const marca = partes[0] as Marca;
             const estagio = partes[1] as Estagio;
             const saude = partes[2] as EstadoSaude;
@@ -46,9 +44,7 @@ export class GerenciadorTexturas {
             const energia = partes[4] as EstadoEnergia;
             const nutricao = partes[5] as EstadoNutricao;
             const higiene = partes[6] as EstadoHigiene;
-
             const animacao = partes[7];
-
             const estado: Estado = {
                 marca,
                 estagio,
@@ -58,20 +54,30 @@ export class GerenciadorTexturas {
                 nutricao,
                 higiene
             };
-
             this.animacoes.set(
                 estado,
-                await (new AnimacaoTexturaRaylib(raylib, `${this.base}${animacao}`)).load()
+                new AnimacaoTexturaRaylib(raylib, `${this.base}${animacao}`)
             );
         }
-        return this;
     }
 
     public pegar_anim(bixinho: Bixinho): AnimacaoTexturaRaylib | undefined {
-
+        // const estado = this.animacoes.keys().toArray()[2] as Estado;
+        // console.log(estado);
+        // console.log(bixinho_estado(bixinho));
+        // console.log(estados_iguais(estado, bixinho_estado(bixinho)));
         for(let [estado, animacao] of this.animacoes) {
             if (estados_iguais(estado, bixinho_estado(bixinho))) {
                 return animacao;
+            }
+        }
+        return undefined;
+    }
+
+    public pegar_detalhe(bixinho: Bixinho): TexturaRaylib | undefined {
+        for(let [estado, detalhe] of this.detalhes) {
+            if (estados_iguais(estado, bixinho_estado(bixinho))) {
+                return detalhe;
             }
         }
         return undefined;

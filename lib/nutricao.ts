@@ -3,7 +3,7 @@ import { GerenciadorNivelEstado } from './gerenciador_nivel_estado';
 
 export enum EstadoNutricao {
     Buxinxei = "Buxinxei",
-    ComFome = "Com Fome",
+    ComFome = "ComFome",
     Faminto = "Faminto"
 }
 
