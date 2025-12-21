@@ -108,28 +108,24 @@ export function to_c_str(str: string) {
 export class TexturaRaylib implements ITextura {
     public caminho_imagem = "";
     private textura: number = 0;
-    constructor(raylib: Raylib, caminho_imagem: string) {
-        this.textura = raylib.LoadTexturePtr(to_c_str(caminho_imagem));
+    constructor(cg: ContextoGraficoRaylib, caminho_imagem: string) {
+        this.textura = cg.raylib.LoadTexturePtr(to_c_str(caminho_imagem));
     }
 
-    public desenhar(cg: IContextoGrafico, x: number, y: number, escala: number, rotacao: number, tint: number) {
-        const raylib = (cg as ContextoGraficoRaylib).raylib;
-        raylib.DrawTextureExPtr(this.textura, x * escala, y * escala, escala, rotacao, tint);
+    public desenhar(cg: ContextoGraficoRaylib, x: number, y: number, escala: number, rotacao: number, tint: number) {
+        cg.raylib.DrawTextureExPtr(this.textura, x * escala, y * escala, escala, rotacao, tint);
     }
 
-    public unload(cg: IContextoGrafico) {
-        const raylib = (cg as ContextoGraficoRaylib).raylib;
-        raylib.UnloadTexturePtr(this.textura);
+    public unload(cg: ContextoGraficoRaylib) {
+        cg.raylib.UnloadTexturePtr(this.textura);
     }
 
-    public largura(cg: IContextoGrafico): number {
-        const raylib = (cg as ContextoGraficoRaylib).raylib;
-        return raylib.TextureGetWidth(this.textura)
+    public largura(cg: ContextoGraficoRaylib): number {
+        return cg.raylib.TextureGetWidth(this.textura)
     }
 
-    public altura(cg: IContextoGrafico): number {
-        const raylib = (cg as ContextoGraficoRaylib).raylib;
-        return raylib.TextureGetHeight(this.textura)
+    public altura(cg: ContextoGraficoRaylib): number {
+        return cg.raylib.TextureGetHeight(this.textura)
     }
 
 }
@@ -144,7 +140,7 @@ export class AnimacaoTexturaRaylib implements IAnimacaoTextura {
     private s2 = 0;
 
     constructor(
-        raylib: Raylib,
+        cg: ContextoGraficoRaylib,
         diretorio_frames: string,
         private stops: number = 2,
         private repetir = true,
@@ -156,11 +152,10 @@ export class AnimacaoTexturaRaylib implements IAnimacaoTextura {
             .sort();
 
         for (const arq of arquivos) {
-            const textura = new TexturaRaylib(raylib, arq);
+            const textura = new TexturaRaylib(cg, arq);
             this.frames.push(textura);
-            const cgTemp = new ContextoGraficoRaylib(raylib);
-            this.altura = Math.max(this.altura, textura.altura(cgTemp));
-            this.largura = Math.max(this.largura, textura.largura(cgTemp));
+            this.altura = Math.max(this.altura, textura.altura(cg));
+            this.largura = Math.max(this.largura, textura.largura(cg));
         }
 
         this.carregado = true;
@@ -188,11 +183,11 @@ export class AnimacaoTexturaRaylib implements IAnimacaoTextura {
         this.s2 = (this.s2 + 1) % this.stops;
     }
 
-    public desenhar(cg: IContextoGrafico, x: number, y: number, escala: number, rotacao: number, tint: number) {
+    public desenhar(cg: ContextoGraficoRaylib, x: number, y: number, escala: number, rotacao: number, tint: number) {
         this.frames[this.frame_atual]?.desenhar(cg, x, y, escala, rotacao, tint);
     }
 
-    public unload(cg: IContextoGrafico) {
+    public unload(cg: ContextoGraficoRaylib) {
         this.frames.forEach((textura) => textura.unload(cg));
     }
 
@@ -207,17 +202,17 @@ export class BotaoRaylib implements IBotao {
     private ultimo_y: number = 0;
     private ultima_escala: number = 0;
 
-    constructor(raylib: Raylib, caminho_imagem: string, tint: number, tint_sobre: number) {
-        this.textura = new TexturaRaylib(raylib, caminho_imagem);
+    constructor(cg: ContextoGraficoRaylib, caminho_imagem: string, tint: number, tint_sobre: number) {
+        this.textura = new TexturaRaylib(cg, caminho_imagem);
         this.tint = tint;
         this.tint_sobre = tint_sobre;
     }
 
-    public unload(cg: IContextoGrafico) {
+    public unload(cg: ContextoGraficoRaylib) {
         this.textura.unload(cg);
     }
 
-    public desenhar(cg: IContextoGrafico, x: number, y: number, escala: number, rotacao: number, destaque: boolean) {
+    public desenhar(cg: ContextoGraficoRaylib, x: number, y: number, escala: number, rotacao: number, destaque: boolean) {
         let cor_destaque;
         if (destaque) {
             cor_destaque = this.tint_sobre;
@@ -232,7 +227,7 @@ export class BotaoRaylib implements IBotao {
     }
 
 
-    public mouse_dentro(cg: IContextoGrafico, mousex: number, mousey: number): boolean {
+    public mouse_dentro(cg: ContextoGraficoRaylib, mousex: number, mousey: number): boolean {
         mousex = mousex / this.ultima_escala;
         mousey = mousey / this.ultima_escala;
         let texw = this.textura.largura(cg);
@@ -261,15 +256,15 @@ export class ContextoGraficoRaylib implements IContextoGrafico {
     }
 
     criar_textura(caminho: string): ITextura {
-        return new TexturaRaylib(this.raylib, caminho);
+        return new TexturaRaylib(this, caminho);
     }
 
     criar_animacao(diretorio: string, stops: number = 2, repetir: boolean = true, direcao: number = 1): IAnimacaoTextura {
-        return new AnimacaoTexturaRaylib(this.raylib, diretorio, stops, repetir, direcao);
+        return new AnimacaoTexturaRaylib(this, diretorio, stops, repetir, direcao);
     }
 
     criar_botao(caminho: string, tint: number, tint_sobre: number): IBotao {
-        return new BotaoRaylib(this.raylib, caminho, tint, tint_sobre);
+        return new BotaoRaylib(this, caminho, tint, tint_sobre);
     }
 
     obter_mouse_x(): number {
