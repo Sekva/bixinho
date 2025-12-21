@@ -25,9 +25,7 @@ function estados_iguais(a: Estado, b: Estado): boolean {
     return true;
 }
 
-
-
-export class GerenciadorTexturas {
+export class GerenciadorTexturasBixinho {
     private readonly base: string = "recursos/imagens/bichov/ANIMAIS/"
     private animacoes: Map<Estado, AnimacaoTexturaRaylib> = new Map();
     private detalhes: Map<Estado, TexturaRaylib> = new Map();

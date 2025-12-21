@@ -2,7 +2,7 @@ import  { raylib_path, raylib_interface, to_c_str, TexturaRaylib, BotaoRaylib, w
 import { dlopen } from "bun:ffi";
 import type { Raylib } from './plataform/raylib_linux/raylib.gerada';
 import { Bixinho, Marca } from '../lib/bixinho';
-import { GerenciadorTexturas } from '../lib/gerenciador_texturas_bixinho';
+import { GerenciadorTexturasBixinho } from '../lib/gerenciador_texturas_bixinho';
 import { bixinho_estado, conteudo_arquivo, prox_do_enum } from '../lib/utils';
 import { EstadoNutricao } from '../lib/nutricao';
 import { EstadoHigiene } from '../lib/higiene';
@@ -38,7 +38,7 @@ const animacao_desliga = new AnimacaoTexturaRaylib(raylib, "recursos/imagens/bic
 
 let bixinho = new Bixinho("axolote");
 
-let gerenciador_texturas = new GerenciadorTexturas(
+let gerenciador_texturas = new GerenciadorTexturasBixinho(
     conteudo_arquivo("anins.org")
         .split("\n")
         .map((x) => x.trim())
