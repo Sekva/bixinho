@@ -1,6 +1,4 @@
 import { exit } from "node:process";
-import { AnimacaoTexturaRaylib, type TexturaRaylib } from "../src/plataform/raylib_linux/main";
-import type { Raylib } from "../src/plataform/raylib_linux/raylib.gerada";
 import { Bixinho, Marca } from "./bixinho";
 import { EstadoEnergia } from "./energia";
 import { Estagio } from "./estagio";
@@ -9,17 +7,18 @@ import { EstadoHumor } from "./humor";
 import { EstadoNutricao } from "./nutricao";
 import { EstadoSaude } from "./saude";
 import { bixinho_estado, type Estado } from "./utils";
+import type { IContextoGrafico, IAnimacaoTextura, ITextura } from "./interfaces_graficas";
 
 function estados_iguais(a: Estado, b: Estado): boolean {
     let valores_a = Object.values(a);
     let valores_b = Object.values(b);
 
-    if(valores_a.length != valores_b.length) { return false; }
+    if (valores_a.length != valores_b.length) { return false; }
 
-    for(let i = 0; i < valores_a.length; i++) {
-        if(valores_a[i] != "_" && valores_b[i] === "_") { valores_b[i] = valores_a[i]; }
-        if(valores_b[i] != "_" && valores_a[i] === "_") { valores_a[i] = valores_b[i]; }
-        if(valores_a[i] != valores_b[i]) { return false; }
+    for (let i = 0; i < valores_a.length; i++) {
+        if (valores_a[i] != "_" && valores_b[i] === "_") { valores_b[i] = valores_a[i]; }
+        if (valores_b[i] != "_" && valores_a[i] === "_") { valores_a[i] = valores_b[i]; }
+        if (valores_a[i] != valores_b[i]) { return false; }
     }
 
     return true;
@@ -27,12 +26,12 @@ function estados_iguais(a: Estado, b: Estado): boolean {
 
 export class GerenciadorTexturasBixinho {
     private readonly base: string = "recursos/imagens/bichov/ANIMAIS/"
-    private animacoes: Map<Estado, AnimacaoTexturaRaylib> = new Map();
-    private detalhes: Map<Estado, TexturaRaylib> = new Map();
+    private animacoes: Map<Estado, IAnimacaoTextura> = new Map();
+    private detalhes: Map<Estado, ITextura> = new Map();
 
     constructor(
         private mapa_anims: string[][],
-        raylib: Raylib
+        cg: IContextoGrafico
     ) {
         for (const partes of this.mapa_anims) {
             const marca = partes[0] as Marca;
@@ -54,17 +53,17 @@ export class GerenciadorTexturasBixinho {
             };
             this.animacoes.set(
                 estado,
-                new AnimacaoTexturaRaylib(raylib, `${this.base}${animacao}`)
+                cg.criar_animacao(`${this.base}${animacao}`)
             );
         }
     }
 
-    public pegar_anim(bixinho: Bixinho): AnimacaoTexturaRaylib | undefined {
+    public pegar_anim(bixinho: Bixinho): IAnimacaoTextura | undefined {
         // const estado = this.animacoes.keys().toArray()[2] as Estado;
         // console.log(estado);
         // console.log(bixinho_estado(bixinho));
         // console.log(estados_iguais(estado, bixinho_estado(bixinho)));
-        for(let [estado, animacao] of this.animacoes) {
+        for (let [estado, animacao] of this.animacoes) {
             if (estados_iguais(estado, bixinho_estado(bixinho))) {
                 return animacao;
             }
@@ -72,8 +71,8 @@ export class GerenciadorTexturasBixinho {
         return undefined;
     }
 
-    public pegar_detalhe(bixinho: Bixinho): TexturaRaylib | undefined {
-        for(let [estado, detalhe] of this.detalhes) {
+    public pegar_detalhe(bixinho: Bixinho): ITextura | undefined {
+        for (let [estado, detalhe] of this.detalhes) {
             if (estados_iguais(estado, bixinho_estado(bixinho))) {
                 return detalhe;
             }
