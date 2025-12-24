@@ -32,3 +32,9 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # Finder (MacOS) folder config
 .DS_Store
+
+# Do projeto
+src/plataform/raylib_linux/raylib.gerada.d.ts
+libraylib_ffi.so
+recursos/
+bichov.kra~
