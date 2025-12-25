@@ -1,7 +1,7 @@
 import { ptr, dlopen, FFIType } from "bun:ffi";
 import type { Raylib } from "./raylib.gerada.d.ts";
 import { readdirSync } from "fs";
-import { type ITextura, type IAnimacaoTextura, type IBotao, type IContextoGrafico, Tecla } from "../../../lib/interfaces_graficas";
+import { type ITextura, type IContextoGrafico, Tecla, AnimacaoTextura, Botao } from "../../../lib/interfaces_graficas";
 
 export const raylib_interface = {
     InitWindow: {
@@ -130,114 +130,6 @@ export class TexturaRaylib implements ITextura {
 
 }
 
-export class AnimacaoTexturaRaylib implements IAnimacaoTextura {
-    private frame_atual: number = 0;
-    private frames: TexturaRaylib[] = [];
-    public altura: number = 0;
-    public largura: number = 0;
-    public carregado: boolean = false;
-    private anim_terminada: boolean = false;
-    private s2 = 0;
-
-    constructor(
-        cg: ContextoGraficoRaylib,
-        diretorio_frames: string,
-        private stops: number = 2,
-        private repetir = true,
-        private direcao = 1
-    ) {
-
-        let arquivos = readdirSync(diretorio_frames)
-            .map(nome => diretorio_frames + "/" + nome)
-            .sort();
-
-        for (const arq of arquivos) {
-            const textura = new TexturaRaylib(cg, arq);
-            this.frames.push(textura);
-            this.altura = Math.max(this.altura, textura.altura(cg));
-            this.largura = Math.max(this.largura, textura.largura(cg));
-        }
-
-        this.carregado = true;
-        if (this.direcao == -1) {
-            this.frames.reverse();
-        }
-
-    }
-
-    public terminada(): boolean {
-        return this.anim_terminada;
-    }
-
-    public update() {
-
-        if (!this.repetir && this.frame_atual == (this.frames.length - 1)) {
-            this.anim_terminada = true;
-            return;
-        }
-
-        if (this.s2 % this.stops == 0) {
-            this.frame_atual = (this.frame_atual + 1) % this.frames.length;
-        }
-
-        this.s2 = (this.s2 + 1) % this.stops;
-    }
-
-    public desenhar(cg: ContextoGraficoRaylib, x: number, y: number, escala: number, rotacao: number, tint: number) {
-        this.frames[this.frame_atual]?.desenhar(cg, x, y, escala, rotacao, tint);
-    }
-
-    public unload(cg: ContextoGraficoRaylib) {
-        this.frames.forEach((textura) => textura.unload(cg));
-    }
-
-}
-
-
-export class BotaoRaylib implements IBotao {
-    private textura: TexturaRaylib;
-    public tint: number;
-    public tint_sobre: number;
-    private ultimo_x: number = 0;
-    private ultimo_y: number = 0;
-    private ultima_escala: number = 0;
-
-    constructor(cg: ContextoGraficoRaylib, caminho_imagem: string, tint: number, tint_sobre: number) {
-        this.textura = new TexturaRaylib(cg, caminho_imagem);
-        this.tint = tint;
-        this.tint_sobre = tint_sobre;
-    }
-
-    public unload(cg: ContextoGraficoRaylib) {
-        this.textura.unload(cg);
-    }
-
-    public desenhar(cg: ContextoGraficoRaylib, x: number, y: number, escala: number, rotacao: number, destaque: boolean) {
-        let cor_destaque;
-        if (destaque) {
-            cor_destaque = this.tint_sobre;
-        } else {
-            cor_destaque = this.tint;
-        }
-
-        this.ultimo_x = x;
-        this.ultimo_y = y;
-        this.ultima_escala = escala;
-        this.textura.desenhar(cg, x, y, escala, rotacao, cor_destaque);
-    }
-
-
-    public mouse_dentro(cg: ContextoGraficoRaylib, mousex: number, mousey: number): boolean {
-        mousex = mousex / this.ultima_escala;
-        mousey = mousey / this.ultima_escala;
-        let texw = this.textura.largura(cg);
-        let texh = this.textura.altura(cg);
-        let cond = (this.ultimo_x < mousex && mousex < (this.ultimo_x + texw)) && (this.ultimo_y < mousey && mousey < (this.ultimo_y + texh));
-        return cond;
-    }
-
-}
-
 export class ContextoGraficoRaylib implements IContextoGrafico {
     public readonly raylib: Raylib;
 
@@ -254,12 +146,12 @@ export class ContextoGraficoRaylib implements IContextoGrafico {
         return new TexturaRaylib(this, caminho);
     }
 
-    criar_animacao(diretorio: string, stops: number = 2, repetir: boolean = true, direcao: number = 1): IAnimacaoTextura {
-        return new AnimacaoTexturaRaylib(this, diretorio, stops, repetir, direcao);
+    criar_animacao(diretorio: string, stops: number = 2, repetir: boolean = true, direcao: number = 1): AnimacaoTextura {
+        return new AnimacaoTextura(this, diretorio, stops, repetir, direcao);
     }
 
-    criar_botao(caminho: string, tint: number, tint_sobre: number): IBotao {
-        return new BotaoRaylib(this, caminho, tint, tint_sobre);
+    criar_botao(caminho: string, tint: number, tint_sobre: number): Botao {
+        return new Botao(this, caminho, tint, tint_sobre);
     }
 
     obter_mouse_x(): number {
@@ -290,7 +182,6 @@ export class ContextoGraficoRaylib implements IContextoGrafico {
         this.raylib.DrawText(texto, x, y, tamanho, cor);
     }
 
-    // Controle de janela e renderização
     inicializar_janela(largura: number, altura: number, titulo: string): void {
         this.raylib.InitWindow(largura, altura, titulo);
     }
@@ -311,7 +202,6 @@ export class ContextoGraficoRaylib implements IContextoGrafico {
         this.raylib.CloseWindow();
     }
 
-    // Ciclo de renderização
     comecar_desenho(): void {
         this.raylib.BeginDrawing();
     }
