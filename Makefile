@@ -5,7 +5,7 @@ src/plataform/raylib_linux/raylib.gerada.d.ts: src/plataform/raylib_linux/gerar_
 	bun run src/plataform/raylib_linux/gerar_interface.ts
 
 libraylib_ffi.so: src/plataform/raylib_linux/raylib_ffi_wrapper.c
-	gcc -fPIC -shared src/plataform/raylib_linux/raylib_ffi_wrapper.c -o libraylib_ffi.so -lraylib -lm -lpthread -ldl -lrt -lGL
+	gcc -fPIC -shared src/plataform/raylib_linux/raylib_ffi_wrapper.c -o libraylib_ffi.so -lraylib -lm -lpthread
 
 clean:
 	rm src/plataform/raylib_linux/raylib.gerada.d.ts libraylib_ffi.so

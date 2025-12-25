@@ -7,7 +7,6 @@ import { GerenciadorSaude } from './saude';
 import { GerenciadorConforto } from './conforto';
 import { SistemaCuidado } from './sistema_cuidado';
 
-
 export enum Marca {
     OXOLOTE = "Axolotl"
 }

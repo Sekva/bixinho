@@ -1,7 +1,7 @@
 import { ptr, dlopen, FFIType } from "bun:ffi";
 import type { Raylib } from "./raylib.gerada.d.ts";
 import { readdirSync } from "fs";
-import type { ITextura, IAnimacaoTextura, IBotao, IContextoGrafico } from "../../../lib/interfaces_graficas";
+import { type ITextura, type IAnimacaoTextura, type IBotao, type IContextoGrafico, Tecla } from "../../../lib/interfaces_graficas";
 
 export const raylib_interface = {
     InitWindow: {
@@ -238,19 +238,14 @@ export class BotaoRaylib implements IBotao {
 
 }
 
-/**
- * Implementação do Contexto Gráfico usando Raylib
- */
 export class ContextoGraficoRaylib implements IContextoGrafico {
     public readonly raylib: Raylib;
 
     constructor(raylibOrPath: Raylib | string) {
         if (typeof raylibOrPath === 'string') {
-            // Recebeu o caminho da biblioteca, precisa carregar
             const { symbols } = dlopen(raylibOrPath, raylib_interface);
             this.raylib = wrapRaylib(symbols);
         } else {
-            // Recebeu o objeto Raylib já carregado
             this.raylib = raylibOrPath;
         }
     }
@@ -275,8 +270,20 @@ export class ContextoGraficoRaylib implements IContextoGrafico {
         return this.raylib.GetMouseY();
     }
 
-    tecla_liberada(tecla: number): boolean {
-        return this.raylib.IsKeyReleased(tecla);
+    tecla_liberada(tecla: Tecla): boolean {
+
+        let tecla_raylib = 0;
+
+        switch(tecla) {
+            case Tecla.Tecla_N: {tecla_raylib = TeclasRaylib.KEY_N} break;
+            case Tecla.Tecla_H: {tecla_raylib = TeclasRaylib.KEY_H} break;
+            case Tecla.Tecla_E: {tecla_raylib = TeclasRaylib.KEY_E} break;
+            case Tecla.Tecla_L: {tecla_raylib = TeclasRaylib.KEY_L} break;
+            case Tecla.Tecla_S: {tecla_raylib = TeclasRaylib.KEY_S} break;
+        }
+
+
+        return this.raylib.IsKeyReleased(tecla_raylib);
     }
 
     desenhar_texto(texto: string, x: number, y: number, tamanho: number, cor: number): void {
@@ -338,7 +345,7 @@ export function wrapRaylib(symbols: any): Raylib {
     return proxy as Raylib;
 }
 
-export enum KeyboardKey {
+export enum TeclasRaylib {
     KEY_NULL = 0,        // Key: NULL, used for no key pressed
     // Alphanumeric keys
     KEY_APOSTROPHE = 39,       // Key: '
