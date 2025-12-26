@@ -36,6 +36,5 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # Do projeto
 src/plataform/raylib_linux/raylib.gerada.d.ts
 libraylib_ffi.so
-recursos/
 bichov.kra~
 bundle.js
