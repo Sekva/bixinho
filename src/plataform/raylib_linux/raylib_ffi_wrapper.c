@@ -38,8 +38,11 @@ void DrawTextureExPtrU32(const Texture2D *texture, int posX, int posY,
 }
 
 Texture2D *LoadTexturePtr(const char *fileName) {
-  Texture2D tex = LoadTexture(fileName);
+  Image img = LoadImage(fileName);
+  ImageColorInvert(&img);
+  Texture2D tex = LoadTextureFromImage(img);
   Texture2D *out = malloc(sizeof(Texture2D));
+  UnloadImage(img);
   if (!out)
     return NULL;
   *out = tex;
