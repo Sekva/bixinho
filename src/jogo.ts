@@ -80,9 +80,9 @@ export class Jogo {
     private iniciar_texturas_basicas() {
         this.texturas_basicas["base_fundo"] = this.cg.criar_textura("recursos/imagens/bichov/base.PNG");
 
-        this.botaos_basicos["botao_saude"] = this.cg.criar_botao("recursos/imagens/bichov/interface/saude.PNG", 0xFFFFFFFF, 0xACFFFFFF);
-        this.botaos_basicos["botao_higiene"] = this.cg.criar_botao("recursos/imagens/bichov/interface/higiene.PNG", 0xFFFFFFFF, 0xACFFFFFF);
-        this.botaos_basicos["botao_energia"] = this.cg.criar_botao("recursos/imagens/bichov/interface/energia.PNG", 0xFFFFFFFF, 0xACFFFFFF);
+        this.botaos_basicos["botao_saude"] = this.cg.criar_botao("recursos/imagens/bichov/interface/saude.PNG", 0xFF000000, 0xACFF00FF);
+        this.botaos_basicos["botao_higiene"] = this.cg.criar_botao("recursos/imagens/bichov/interface/higiene.PNG", 0xFF000000,  0xACFF00FF);
+        this.botaos_basicos["botao_energia"] = this.cg.criar_botao("recursos/imagens/bichov/interface/energia.PNG", 0xFF000000,  0xACFF00FF);
 
         this.animacoes_basicas["animacao_cabelo"] = this.cg.criar_animacao("recursos/imagens/bichov/cabelo", 4);
         this.animacoes_basicas["animacao_liga"] = this.cg.criar_animacao("recursos/imagens/bichov/liga_desliga", 1, false, -1);
@@ -159,13 +159,13 @@ export class Jogo {
     private desenhar_bixinho() {
         const animacao = this.gerenciador_texturas_bixinho.pegar_anim(this.bixinho);
         if (animacao) {
-            animacao.desenhar(this.cg, 75, 64, this.escala, 0, 0xFFFFFFFF);
+            animacao.desenhar(this.cg, 75, 64, this.escala, 0, 0xFF000000);
         }
     }
 
     private desenhar_interface() {
-        this.texturas_basicas["base_fundo"]?.desenhar(this.cg, 0, 0, this.escala, 0, 0xFFFFFFFF);
-        this.animacoes_basicas["animacao_cabelo"]?.desenhar(this.cg, 0, 19, this.escala, 0, 0xFFFFFFFF);
+        this.texturas_basicas["base_fundo"]?.desenhar(this.cg, 0, 0, this.escala, 0, 0xFF000000);
+        this.animacoes_basicas["animacao_cabelo"]?.desenhar(this.cg, 0, 19, this.escala, 0, 0xFF000000);
 
         const botao_saude = this.botaos_basicos["botao_saude"];
         const botao_higiene = this.botaos_basicos["botao_higiene"]
@@ -179,7 +179,7 @@ export class Jogo {
     private animar_ligar_desligar(anim: string) {
         const animacao = this.animacoes_basicas[anim];
         if(animacao) {
-            animacao.desenhar(this.cg, 0, 0, this.escala, 0, 0xFFFFFFFF);
+            animacao.desenhar(this.cg, 0, 0, this.escala, 0, 0xFF000000);
         }
     }
 

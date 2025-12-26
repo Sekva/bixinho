@@ -38,3 +38,5 @@ src/plataform/raylib_linux/raylib.gerada.d.ts
 libraylib_ffi.so
 bichov.kra~
 bundle.js
+recursos/imagens/*
+!recursos/imagens/.gitkeep

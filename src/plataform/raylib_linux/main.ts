@@ -3,6 +3,14 @@ import type { Raylib } from "./raylib.gerada.d.ts";
 import { type ITextura, type IContextoGrafico, Tecla, AnimacaoTextura, Botao } from "../../../lib/interfaces_graficas";
 import type { ILeitorFS } from "../../../lib/leitor_fs.ts";
 
+function argbToRaylibU32(argb: number): number {
+  const a = (argb >>> 24) & 0xFF;
+  const r = (argb >>> 16) & 0xFF;
+  const g = (argb >>> 8) & 0xFF;
+  const b = (argb >>> 0) & 0xFF;
+  return (((a << 24) | (b << 16) | (g << 8) | r) >>> 0);
+}
+
 export const raylib_interface = {
     InitWindow: {
         args: [FFIType.i32, FFIType.i32, FFIType.cstring],
@@ -113,7 +121,14 @@ export class TexturaRaylib implements ITextura {
     }
 
     public desenhar(cg: ContextoGraficoRaylib, x: number, y: number, escala: number, rotacao: number, tint: number) {
-        cg.raylib.DrawTextureExPtr(this.textura, x * escala, y * escala, escala, rotacao, tint);
+        cg.raylib.DrawTextureExPtr(
+            this.textura,
+            x * escala,
+            y * escala,
+            escala,
+            rotacao,
+            argbToRaylibU32(tint)
+        );
     }
 
     public unload(cg: ContextoGraficoRaylib) {

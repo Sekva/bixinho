@@ -7,66 +7,87 @@ export class TexturaHTML5 implements ITextura {
     private larguraImg: number = 0;
     private alturaImg: number = 0;
 
-    constructor(
-        private caminho: string
-    ) {
-        this.imagem = new Image();
+    private tintCanvas?: HTMLCanvasElement;
+    private tintCtx?: CanvasRenderingContext2D;
 
+    private getTintCtx(w: number, h: number) {
+        if (!this.tintCanvas) {
+            this.tintCanvas = document.createElement("canvas");
+            this.tintCtx = this.tintCanvas.getContext("2d")!;
+            this.tintCtx.imageSmoothingEnabled = false;
+        }
+        if (this.tintCanvas.width !== w) this.tintCanvas.width = w;
+        if (this.tintCanvas.height !== h) this.tintCanvas.height = h;
+        return this.tintCtx!;
+    }
+
+    constructor(private caminho: string) {
+        this.imagem = new Image();
         this.imagem.onload = () => {
             this.carregada = true;
             this.larguraImg = this.imagem.width;
             this.alturaImg = this.imagem.height;
         };
-
         this.imagem.onerror = () => {
             console.error(`Erro ao carregar textura: ${caminho}`);
             this.carregada = false;
         };
-
         this.imagem.src = caminho;
     }
 
     desenhar(cg: ContextoGraficoHTML5, x: number, y: number, escala: number, rotacao: number, tint: number): void {
         if (!this.carregada) return;
-        cg.ctx.save();
-        cg.ctx.translate(x*escala, y*escala);
-        cg.ctx.rotate(rotacao);
-        cg.ctx.scale(escala, escala);
-        // TODO: rever esse tint, aqui e no nativo
-        if (tint !== 0xFFFFFF) {
-            cg.ctx.save();
-            const r = ((tint >> 16) & 0xFF) / 255;
-            const g = ((tint >> 8) & 0xFF) / 255;
-            const b = (tint & 0xFF) / 255;
-            cg.ctx.filter = `brightness(0) saturate(100%)
-                         sepia(100%)
-                         hue-rotate(0deg)
-                         saturate(100%)
-                         brightness(100%)
-                         contrast(100%)
-                         drop-shadow(0px 0px 0px rgb(${r * 255}, ${g * 255}, ${b * 255}))`;
+
+        const ctx = cg.ctx;
+
+        ctx.save();
+        ctx.translate(x * escala, y * escala);
+        ctx.rotate(rotacao);
+        ctx.scale(escala, escala);
+
+        if (tint === 0xFFFFFFFF) {
+            ctx.drawImage(this.imagem, 0, 0);
+            ctx.restore();
+            return;
         }
-        cg.ctx.drawImage(this.imagem, 0, 0);
-        if (tint !== 0xFFFFFF) {
-            cg.ctx.restore(); // Restaurar filter
-        }
-        cg.ctx.restore();
+
+        const a = ((tint >>> 24) & 0xFF) / 255;
+        const r = (tint >>> 16) & 0xFF;
+        const g = (tint >>> 8) & 0xFF;
+        const b = (tint >>> 0) & 0xFF;
+
+        const w = this.larguraImg;
+        const h = this.alturaImg;
+
+        const tctx = this.getTintCtx(w, h);
+
+        // IMPORTANTÍSSIMO: isso é no offscreen, não no canvas principal
+        tctx.clearRect(0, 0, w, h);
+
+        tctx.globalCompositeOperation = "source-over";
+        tctx.drawImage(this.imagem, 0, 0);
+
+        tctx.globalCompositeOperation = "source-in";
+        tctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
+        tctx.fillRect(0, 0, w, h);
+
+        tctx.globalCompositeOperation = "source-over";
+
+        // Agora sim: joga o resultado no canvas principal
+        ctx.drawImage(this.tintCanvas!, 0, 0);
+
+        ctx.restore();
     }
 
-    unload(cg: ContextoGraficoHTML5): void {
-        this.imagem.src = '';
+    unload(_cg: ContextoGraficoHTML5): void {
+        this.imagem.src = "";
         this.carregada = false;
         this.larguraImg = 0;
         this.alturaImg = 0;
     }
 
-    largura(cg: ContextoGraficoHTML5): number {
-        return this.larguraImg;
-    }
-
-    altura(cg: ContextoGraficoHTML5): number {
-        return this.alturaImg;
-    }
+    largura(_cg: ContextoGraficoHTML5): number { return this.larguraImg; }
+    altura(_cg: ContextoGraficoHTML5): number { return this.alturaImg; }
 }
 
 export class ContextoGraficoHTML5 implements IContextoGrafico {
@@ -159,11 +180,17 @@ export class ContextoGraficoHTML5 implements IContextoGrafico {
     }
 
     obter_mouse_x(): number {
-        return this.mouseX;
+        if(this.mouseEmCanvas) {
+            return this.mouseX;
+        }
+        return 0;
     }
 
     obter_mouse_y(): number {
-        return this.mouseY;
+        if(this.mouseEmCanvas) {
+            return this.mouseY;
+        }
+        return 0;
     }
 
     tecla_liberada(tecla: Tecla): boolean {
