@@ -165,7 +165,7 @@ export class Jogo {
 
     private desenhar_interface() {
         this.texturas_basicas["base_fundo"]?.desenhar(this.cg, 0, 0, this.escala, 0, 0xFFFFFFFF);
-        this.animacoes_basicas["animacao_cabelo"]?.desenhar(this.cg, 0, 21, this.escala, 0, 0xFFFFFFFF);
+        this.animacoes_basicas["animacao_cabelo"]?.desenhar(this.cg, 0, 19, this.escala, 0, 0xFFFFFFFF);
 
         const botao_saude = this.botaos_basicos["botao_saude"];
         const botao_higiene = this.botaos_basicos["botao_higiene"]
