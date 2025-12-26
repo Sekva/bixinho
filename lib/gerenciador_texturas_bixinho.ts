@@ -1,4 +1,3 @@
-import { exit } from "node:process";
 import { Bixinho, Marca } from "./bixinho";
 import { EstadoEnergia } from "./energia";
 import { Estagio } from "./estagio";
@@ -7,7 +6,7 @@ import { EstadoHumor } from "./humor";
 import { EstadoNutricao } from "./nutricao";
 import { EstadoSaude } from "./saude";
 import { bixinho_estado, type Estado } from "./utils";
-import type { IContextoGrafico, IAnimacaoTextura, ITextura } from "./interfaces_graficas";
+import type { IContextoGrafico, AnimacaoTextura, ITextura } from "./interfaces_graficas";
 
 function estados_iguais(a: Estado, b: Estado): boolean {
     let valores_a = Object.values(a);
@@ -26,7 +25,7 @@ function estados_iguais(a: Estado, b: Estado): boolean {
 
 export class GerenciadorTexturasBixinho {
     private readonly base: string = "recursos/imagens/bichov/ANIMAIS/"
-    private animacoes: Map<Estado, IAnimacaoTextura> = new Map();
+    private animacoes: Map<Estado, AnimacaoTextura> = new Map();
     private detalhes: Map<Estado, ITextura> = new Map();
 
     constructor(
@@ -58,7 +57,7 @@ export class GerenciadorTexturasBixinho {
         }
     }
 
-    public pegar_anim(bixinho: Bixinho): IAnimacaoTextura | undefined {
+    public pegar_anim(bixinho: Bixinho): AnimacaoTextura | undefined {
         // const estado = this.animacoes.keys().toArray()[2] as Estado;
         // console.log(estado);
         // console.log(bixinho_estado(bixinho));

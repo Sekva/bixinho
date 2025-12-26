@@ -1,12 +1,13 @@
-import { type IContextoGrafico, type ITextura, type IAnimacaoTextura, type IBotao, Tecla } from '../lib/interfaces_graficas';
+import { type IContextoGrafico, type ITextura, AnimacaoTextura, Botao, Tecla } from '../lib/interfaces_graficas';
 import { Bixinho } from '../lib/bixinho';
 import { GerenciadorTexturasBixinho } from '../lib/gerenciador_texturas_bixinho';
-import { bixinho_estado, conteudo_arquivo, prox_do_enum } from '../lib/utils';
+import { bixinho_estado, prox_do_enum } from '../lib/utils';
 import { EstadoNutricao } from '../lib/nutricao';
 import { EstadoHigiene } from '../lib/higiene';
 import { EstadoHumor } from '../lib/humor';
 import { EstadoEnergia } from '../lib/energia';
 import { EstadoSaude } from '../lib/saude';
+import type { ILeitorFS } from '../lib/leitor_fs';
 
 enum EstadoJogo {
     Ligando = 0,
@@ -21,15 +22,15 @@ export class Jogo {
     private gerenciador_texturas_bixinho: GerenciadorTexturasBixinho;
 
     private texturas_basicas: Record<string, ITextura> = {} as any;
-    private botaos_basicos: Record<string, IBotao> = {} as any;
-    private animacoes_basicas: Record<string, IAnimacaoTextura> = {} as any;
+    private botaos_basicos: Record<string, Botao> = {} as any;
+    private animacoes_basicas: Record<string, AnimacaoTextura> = {} as any;
     private estado: EstadoJogo = EstadoJogo.Ligando;
 
     constructor(
         private cg: IContextoGrafico,
         private arquivo_animacoes: string,
         public bixinho: Bixinho,
-
+        private leitor_fs: ILeitorFS,
         private largura = 160,
         private altura = 144,
         private escala = 5,
@@ -44,7 +45,7 @@ export class Jogo {
 
         this.iniciar_texturas_basicas();
         this.gerenciador_texturas_bixinho = new GerenciadorTexturasBixinho(
-            conteudo_arquivo(this.arquivo_animacoes)
+            this.leitor_fs.conteudo_arquivo(this.arquivo_animacoes)
                 .split("\n")
                 .map((x) => x.trim())
                 .filter((x) => x != "")
@@ -55,16 +56,16 @@ export class Jogo {
     }
 
     private debug() {
-        this.cg.desenhar_texto(JSON.stringify(bixinho_estado(this.bixinho), null, 4), 0, 0, 16, 0xFFFFFFFF);
+        const texto = JSON.stringify(bixinho_estado(this.bixinho), null, 4);
+        this.cg.desenhar_texto(texto, 0, 0, 16, 0xFFFFFFFF);
+        console.log(JSON.stringify(bixinho_estado(this.bixinho)));
 
         if (this.cg.tecla_liberada(Tecla.Tecla_N)) {
             this.bixinho.nutricao.setar_estado_atual(prox_do_enum(EstadoNutricao, this.bixinho.nutricao.estado_atual()));
         }
-
         if (this.cg.tecla_liberada(Tecla.Tecla_H)) {
             this.bixinho.humor.setar_estado_atual(prox_do_enum(EstadoHumor, this.bixinho.humor.estado_atual()));
         }
-
         if (this.cg.tecla_liberada(Tecla.Tecla_E)) {
             this.bixinho.energia.setar_estado_atual(prox_do_enum(EstadoEnergia, this.bixinho.energia.estado_atual()));
         }
@@ -141,7 +142,6 @@ export class Jogo {
 
     public desenhar() {
         if(this.terminado()) { return; }
-
         this.cg.comecar_desenho();
         this.cg.limpar_fundo(0xFFFFFFFF);
         switch(this.estado) {

@@ -1,4 +1,3 @@
-import { readFileSync } from "fs";
 import type { Bixinho, Marca } from "./bixinho";
 import type { EstadoEnergia } from "./energia";
 import type { Estagio } from "./estagio";
@@ -13,14 +12,14 @@ export const cartesianProduct = <T extends any[][]>(
     arrays.reduce((partialProduct, nextArray) =>
         partialProduct.flatMap((items) =>
             nextArray.map((nextItem) => [items, nextItem].flat()),
-                              ),
-                 );
+        ),
+    );
 
 export function obterValoresEnum<T extends object>(enumObj: T): Array<T[keyof T]> {
     const valores = Object.values(enumObj);
     return valores.filter(v =>
         typeof v === 'string' || typeof v === 'number'
-                         ) as Array<T[keyof T]>;
+    ) as Array<T[keyof T]>;
 }
 
 export interface Estado {
@@ -60,12 +59,8 @@ export function prox_do_enum<T extends object>(enumObj: T, atual: any): T[keyof 
     const itens = obterValoresEnum(enumObj);
     const idx = itens.indexOf(atual) + 1;
     let ret = itens[idx % itens.length];
-    if(ret == undefined) {
+    if (ret == undefined) {
         return atual;
     }
     return ret;
-}
-
-export function conteudo_arquivo(arquivo: string): string {
-    return readFileSync(arquivo).toString();
 }

@@ -1,4 +1,4 @@
-import { readdirSync } from "fs";
+import type { ILeitorFS } from "./leitor_fs";
 
 export enum Tecla {
     Tecla_N,
@@ -27,12 +27,12 @@ export class AnimacaoTextura {
     constructor(
         cg: IContextoGrafico,
         diretorio_frames: string,
+        leitor_fs: ILeitorFS,
         private stops: number = 2,
         private repetir = true,
         private direcao = 1
     ) {
-
-        let arquivos = readdirSync(diretorio_frames)
+        let arquivos = leitor_fs.listar_arquivos(diretorio_frames)
             .map(nome => diretorio_frames + "/" + nome)
             .sort();
 
@@ -122,7 +122,7 @@ export class Botao {
 export interface IContextoGrafico {
     criar_textura(caminho: string): ITextura;
     criar_animacao(diretorio: string, stops?: number, repetir?: boolean, direcao?: number): AnimacaoTextura;
-    criar_botao(caminho: string, tint: number, tint_sobre: number): IBotao;
+    criar_botao(caminho: string, tint: number, tint_sobre: number): Botao;
 
     obter_mouse_x(): number;
     obter_mouse_y(): number;

@@ -4,14 +4,14 @@
     "type": "module",
     "private": true,
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/bun": "latest",
+        "esbuild": "^0.19.0"
     },
     "peerDependencies": {
         "typescript": "^5"
     },
-
     "scripts": {
-        "start": "bun src/index.ts"
-    },
-
+        "build:web": "esbuild src/web.ts --bundle --outfile=bundle.js --format=esm --platform=browser --loader:.ts=ts --external:bun:ffi --external:fs --external:node:process",
+        "serve": "bun run build:web && bun server.ts"
+    }
 }

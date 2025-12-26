@@ -38,3 +38,4 @@ src/plataform/raylib_linux/raylib.gerada.d.ts
 libraylib_ffi.so
 recursos/
 bichov.kra~
+bundle.js

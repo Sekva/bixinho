@@ -1,4 +1,5 @@
 import { type ITextura, type IContextoGrafico, Tecla, AnimacaoTextura, Botao } from "../../../lib/interfaces_graficas";
+import type { ILeitorFS } from "../../../lib/leitor_fs";
 
 export class TexturaHTML5 implements ITextura {
     private imagem: HTMLImageElement;
@@ -7,7 +8,6 @@ export class TexturaHTML5 implements ITextura {
     private alturaImg: number = 0;
 
     constructor(
-        private ctx: CanvasRenderingContext2D,
         private caminho: string
     ) {
         this.imagem = new Image();
@@ -28,20 +28,16 @@ export class TexturaHTML5 implements ITextura {
 
     desenhar(cg: ContextoGraficoHTML5, x: number, y: number, escala: number, rotacao: number, tint: number): void {
         if (!this.carregada) return;
-
         cg.ctx.save();
-
-        cg.ctx.translate(x, y);
+        cg.ctx.translate(x*escala, y*escala);
         cg.ctx.rotate(rotacao);
         cg.ctx.scale(escala, escala);
-
+        // TODO: rever esse tint, aqui e no nativo
         if (tint !== 0xFFFFFF) {
             cg.ctx.save();
-
             const r = ((tint >> 16) & 0xFF) / 255;
             const g = ((tint >> 8) & 0xFF) / 255;
             const b = (tint & 0xFF) / 255;
-
             cg.ctx.filter = `brightness(0) saturate(100%)
                          sepia(100%)
                          hue-rotate(0deg)
@@ -50,13 +46,7 @@ export class TexturaHTML5 implements ITextura {
                          contrast(100%)
                          drop-shadow(0px 0px 0px rgb(${r * 255}, ${g * 255}, ${b * 255}))`;
         }
-
-        // Desenhar imagem centralizada
-        const offsetX = 0;//-this.larguraImg / 2;
-        const offsetY = 0;//-this.alturaImg / 2;
-        cg.ctx.drawImage(this.imagem, offsetX, offsetY);
-
-        // Restaurar estado
+        cg.ctx.drawImage(this.imagem, 0, 0);
         if (tint !== 0xFFFFFF) {
             cg.ctx.restore(); // Restaurar filter
         }
@@ -64,7 +54,6 @@ export class TexturaHTML5 implements ITextura {
     }
 
     unload(cg: ContextoGraficoHTML5): void {
-        // Liberar recursos da imagem
         this.imagem.src = '';
         this.carregada = false;
         this.larguraImg = 0;
@@ -78,10 +67,7 @@ export class TexturaHTML5 implements ITextura {
     altura(cg: ContextoGraficoHTML5): number {
         return this.alturaImg;
     }
-
 }
-
-
 
 export class ContextoGraficoHTML5 implements IContextoGrafico {
 
@@ -89,7 +75,6 @@ export class ContextoGraficoHTML5 implements IContextoGrafico {
 
     private mouseX: number = 0;
     private mouseY: number = 0;
-    private teclasPressionadas: Map<Tecla, boolean> = new Map();
     private teclasLiberadas: Map<Tecla, boolean> = new Map();
     private mouseEmCanvas: boolean = false;
     private ultimoFrameTime: number = 0;
@@ -99,8 +84,8 @@ export class ContextoGraficoHTML5 implements IContextoGrafico {
 
     constructor(
         public canvas: HTMLCanvasElement,
+        private leitor_fs: ILeitorFS,
     ) {
-
         let ctx_temp = canvas.getContext("2d");
         if (ctx_temp) {
             this.ctx = ctx_temp;
@@ -113,12 +98,12 @@ export class ContextoGraficoHTML5 implements IContextoGrafico {
 
         Object.values(Tecla).forEach(tecla => {
             if (typeof tecla === 'number') {
-                this.teclasPressionadas.set(tecla, false);
-                this.teclasLiberadas.set(tecla, true);
+                this.teclasLiberadas.set(tecla, false);
             }
         });
 
         this.frameDelay = 1000 / this.fpsAlvo;
+        this.ctx.imageSmoothingEnabled = false;
 
     }
 
@@ -139,19 +124,9 @@ export class ContextoGraficoHTML5 implements IContextoGrafico {
     }
 
     private configurarEventosTeclado(): void {
-        document.addEventListener('keydown', (e) => {
-            const tecla = this.mapearTecla(e.key);
-            if (tecla !== undefined) {
-                this.teclasPressionadas.set(tecla, true);
-                this.teclasLiberadas.set(tecla, false);
-                e.preventDefault();
-            }
-        });
-
         document.addEventListener('keyup', (e) => {
             const tecla = this.mapearTecla(e.key);
             if (tecla !== undefined) {
-                this.teclasPressionadas.set(tecla, false);
                 this.teclasLiberadas.set(tecla, true);
                 e.preventDefault();
             }
@@ -159,7 +134,7 @@ export class ContextoGraficoHTML5 implements IContextoGrafico {
     }
 
 
-      private mapearTecla(key: string): Tecla | undefined {
+    private mapearTecla(key: string): Tecla | undefined {
         switch(key.toLowerCase()) {
             case 'n': return Tecla.Tecla_N;
             case 'h': return Tecla.Tecla_H;
@@ -171,11 +146,11 @@ export class ContextoGraficoHTML5 implements IContextoGrafico {
     }
 
     criar_textura(caminho: string): ITextura {
-        return new TexturaHTML5(this.ctx, caminho);
+        return new TexturaHTML5(caminho);
     }
 
     criar_animacao(diretorio: string, stops: number = 2, repetir: boolean = true, direcao: number = 1): AnimacaoTextura {
-        return new AnimacaoTextura(this, diretorio, stops, repetir, direcao);
+        return new AnimacaoTextura(this, diretorio, this.leitor_fs, stops, repetir, direcao);
     }
 
     criar_botao(caminho: string, tint: number, tint_sobre: number): Botao {
@@ -191,23 +166,26 @@ export class ContextoGraficoHTML5 implements IContextoGrafico {
     }
 
     tecla_liberada(tecla: Tecla): boolean {
-        return this.teclasLiberadas.get(tecla) || false;
+        const val = this.teclasLiberadas.get(tecla) || false;
+        this.teclasLiberadas.set(tecla, false);
+        return val;
     }
 
     desenhar_texto(texto: string, x: number, y: number, tamanho: number, cor: number): void {
         this.ctx.save();
         const corHex = `#${cor.toString(16).padStart(6, '0')}`;
         this.ctx.fillStyle = corHex;
-        this.ctx.font = `${tamanho}px Arial`;
+        this.ctx.font = `${tamanho}px Calibri`;
         this.ctx.textAlign = 'left';
         this.ctx.textBaseline = 'top';
-        this.ctx.fillText(texto, x, y);
+        this.ctx.fillText(texto, x, y, this.canvas.width);
         this.ctx.restore();
     }
 
     inicializar_janela(largura: number, altura: number, titulo: string): void {
         this.canvas.width = largura;
         this.canvas.height = altura;
+        this.ctx.imageSmoothingEnabled = false;
         if (typeof document !== 'undefined') {
             document.title = titulo;
         }

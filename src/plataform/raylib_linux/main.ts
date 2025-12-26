@@ -1,7 +1,7 @@
 import { ptr, dlopen, FFIType } from "bun:ffi";
 import type { Raylib } from "./raylib.gerada.d.ts";
-import { readdirSync } from "fs";
 import { type ITextura, type IContextoGrafico, Tecla, AnimacaoTextura, Botao } from "../../../lib/interfaces_graficas";
+import type { ILeitorFS } from "../../../lib/leitor_fs.ts";
 
 export const raylib_interface = {
     InitWindow: {
@@ -133,7 +133,8 @@ export class TexturaRaylib implements ITextura {
 export class ContextoGraficoRaylib implements IContextoGrafico {
     public readonly raylib: Raylib;
 
-    constructor(raylibOrPath: Raylib | string) {
+    constructor(raylibOrPath: Raylib | string,
+                private leitor_fs: ILeitorFS) {
         if (typeof raylibOrPath === 'string') {
             const { symbols } = dlopen(raylibOrPath, raylib_interface);
             this.raylib = wrapRaylib(symbols);
@@ -147,7 +148,7 @@ export class ContextoGraficoRaylib implements IContextoGrafico {
     }
 
     criar_animacao(diretorio: string, stops: number = 2, repetir: boolean = true, direcao: number = 1): AnimacaoTextura {
-        return new AnimacaoTextura(this, diretorio, stops, repetir, direcao);
+        return new AnimacaoTextura(this, diretorio, this.leitor_fs, stops, repetir, direcao);
     }
 
     criar_botao(caminho: string, tint: number, tint_sobre: number): Botao {
@@ -166,14 +167,13 @@ export class ContextoGraficoRaylib implements IContextoGrafico {
 
         let tecla_raylib = 0;
 
-        switch(tecla) {
-            case Tecla.Tecla_N: {tecla_raylib = TeclasRaylib.KEY_N} break;
-            case Tecla.Tecla_H: {tecla_raylib = TeclasRaylib.KEY_H} break;
-            case Tecla.Tecla_E: {tecla_raylib = TeclasRaylib.KEY_E} break;
-            case Tecla.Tecla_L: {tecla_raylib = TeclasRaylib.KEY_L} break;
-            case Tecla.Tecla_S: {tecla_raylib = TeclasRaylib.KEY_S} break;
+        switch (tecla) {
+            case Tecla.Tecla_N: { tecla_raylib = TeclasRaylib.KEY_N } break;
+            case Tecla.Tecla_H: { tecla_raylib = TeclasRaylib.KEY_H } break;
+            case Tecla.Tecla_E: { tecla_raylib = TeclasRaylib.KEY_E } break;
+            case Tecla.Tecla_L: { tecla_raylib = TeclasRaylib.KEY_L } break;
+            case Tecla.Tecla_S: { tecla_raylib = TeclasRaylib.KEY_S } break;
         }
-
 
         return this.raylib.IsKeyReleased(tecla_raylib);
     }
