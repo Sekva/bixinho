@@ -14,7 +14,7 @@ const server = Bun.serve({
             return new Response('', { status: 200, headers: { 'Content-Type': 'image/x-icon' } });
         }
 
-        const basePath = '/home/sekva/dados/progamming/bixinho';
+        const basePath = '.';
         const fullPath = basePath + filePath;
 
         try {

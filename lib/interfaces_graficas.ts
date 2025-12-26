@@ -6,6 +6,7 @@ export enum Tecla {
     Tecla_E,
     Tecla_L,
     Tecla_S,
+    Tecla_ESC,
 }
 
 export interface ITextura {

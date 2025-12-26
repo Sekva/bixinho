@@ -168,6 +168,7 @@ export class ContextoGraficoRaylib implements IContextoGrafico {
         let tecla_raylib = 0;
 
         switch (tecla) {
+            case Tecla.Tecla_ESC: { tecla_raylib = TeclasRaylib.KEY_ESCAPE } break;
             case Tecla.Tecla_N: { tecla_raylib = TeclasRaylib.KEY_N } break;
             case Tecla.Tecla_H: { tecla_raylib = TeclasRaylib.KEY_H } break;
             case Tecla.Tecla_E: { tecla_raylib = TeclasRaylib.KEY_E } break;

@@ -126,7 +126,9 @@ export class Jogo {
     private update_jogando() {
         this.update_bixinho();
         this.animacoes_basicas["animacao_cabelo"]?.update();
-        // controles...
+        if (this.cg.tecla_liberada(Tecla.Tecla_ESC)) {
+            this.avancar_estado_jogo();
+        }
     }
 
     public terminado(): boolean {

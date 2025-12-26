@@ -136,6 +136,7 @@ export class ContextoGraficoHTML5 implements IContextoGrafico {
 
     private mapearTecla(key: string): Tecla | undefined {
         switch(key.toLowerCase()) {
+            case 'escape': return Tecla.Tecla_ESC;
             case 'n': return Tecla.Tecla_N;
             case 'h': return Tecla.Tecla_H;
             case 'e': return Tecla.Tecla_E;
