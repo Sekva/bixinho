@@ -6,6 +6,9 @@ import type { EstadoHumor } from "./humor";
 import type { EstadoNutricao } from "./nutricao";
 import type { EstadoSaude } from "./saude";
 
+/* Um segundo real / quantos segundos no jogo */
+export const avanco_tempo = 1 / 1;
+
 export const cartesianProduct = <T extends any[][]>(
     arrays: [...T],
 ): Array<{ [K in keyof T]: T[K][number] }> =>

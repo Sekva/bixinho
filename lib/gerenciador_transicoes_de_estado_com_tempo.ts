@@ -1,3 +1,5 @@
+import { avanco_tempo } from "./utils";
+
 export class GerenciadorTransicoesComTempo<T extends string | number | symbol> {
     private tempos_msegundos_passados = new Map<[T, T], number>();
     private tempos_segundos_objetivos = new Map<[T, T], number>();
@@ -47,7 +49,7 @@ export class GerenciadorTransicoesComTempo<T extends string | number | symbol> {
             this.setar_tempo_transicao_passado(de, para, 0);
         }
 
-        return ((Date.now() - tempo_passado_na_condicao) >= tempo_para_prox * 1000) && condicao;
+        return ((Date.now() - tempo_passado_na_condicao) >= tempo_para_prox * 1000 * avanco_tempo) && condicao;
     }
 
     constructor(tempos_transicoes: Array<[T, T, number]>) {

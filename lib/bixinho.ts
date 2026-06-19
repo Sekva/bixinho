@@ -7,6 +7,7 @@ import { GerenciadorSaude } from './saude';
 import { GerenciadorConforto } from './conforto';
 import { SistemaCuidado } from './sistema_cuidado';
 import { GerenciadorNivelEstado } from './gerenciador_nivel_estado';
+import { avanco_tempo } from './utils';
 
 export enum Marca {
     OXOLOTE = "Axolotl"
@@ -56,7 +57,7 @@ export class Bixinho {
         if(this.impedir_update) {return;}
 
         const ms_desde_ultimo_update = Date.now() - this.data_ultimo_update_ms;
-        const minutos_desde_ultimo_update = Math.floor(ms_desde_ultimo_update / (1 /* min */ * 60000));
+        const minutos_desde_ultimo_update = Math.floor(ms_desde_ultimo_update / (1 /* min */ * 60000 * avanco_tempo));
 
         this.atualizarGerenciador(this.humor);
         this.atualizarGerenciador(this.nutricao);
