@@ -1,3 +1,5 @@
+export NO_COLOR := 1
+
 all: libraylib_ffi.so src/plataform/raylib_linux/raylib.gerada.d.ts
 	bun run src/nativo.ts
 
