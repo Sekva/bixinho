@@ -56,7 +56,7 @@ export class Bixinho {
         if(this.impedir_update) {return;}
 
         const ms_desde_ultimo_update = Date.now() - this.data_ultimo_update_ms;
-        const minutos_desde_ultimo_update = Math.floor(ms_desde_ultimo_update / (10000 /* min */ * 60000));
+        const minutos_desde_ultimo_update = Math.floor(ms_desde_ultimo_update / (1 /* min */ * 60000));
 
         this.atualizarGerenciador(this.humor);
         this.atualizarGerenciador(this.nutricao);
