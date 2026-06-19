@@ -10,7 +10,7 @@ export enum EstadoHumor {
 
 export class GerenciadorHumor  extends GerenciadorNivelEstado<EstadoHumor> {
 
-    avancar_estado_normal(bixinho: Readonly<Bixinho>): EstadoHumor {
+    private avancar_estado_normal(bixinho: Readonly<Bixinho>): EstadoHumor {
         if(bixinho.nutricao.nivel() > 80 && this.nivel() > 80 && bixinho.higiene.nivel() > 80) {
             return EstadoHumor.Feliz;
         }
@@ -22,7 +22,7 @@ export class GerenciadorHumor  extends GerenciadorNivelEstado<EstadoHumor> {
         return EstadoHumor.Tranquilo;
     }
 
-    avancar_estado_feliz(bixinho: Readonly<Bixinho>): EstadoHumor {
+    private avancar_estado_feliz(bixinho: Readonly<Bixinho>): EstadoHumor {
         if(bixinho.nutricao.nivel() <= 80 || this.nivel() <= 80) {
             return EstadoHumor.Tranquilo;
         }
@@ -30,7 +30,7 @@ export class GerenciadorHumor  extends GerenciadorNivelEstado<EstadoHumor> {
         return EstadoHumor.Feliz;
     }
 
-    avancar_estado_irritado(bixinho: Readonly<Bixinho>): EstadoHumor {
+    private avancar_estado_irritado(bixinho: Readonly<Bixinho>): EstadoHumor {
         // Irritado -> Normal
         if(this.gerenciador_transicoes_com_tempo.verificar_tempo_no_estado(EstadoHumor.Irritado, EstadoHumor.Tranquilo, (bixinho.nutricao.nivel() > 50 && this.nivel() > 50))) {
             return EstadoHumor.Tranquilo;
@@ -46,7 +46,7 @@ export class GerenciadorHumor  extends GerenciadorNivelEstado<EstadoHumor> {
     }
 
 
-    avancar_estado_triste(bixinho: Readonly<Bixinho>): EstadoHumor {
+    private avancar_estado_triste(bixinho: Readonly<Bixinho>): EstadoHumor {
         // Triste -> Irritado
         if(this.gerenciador_transicoes_com_tempo.verificar_tempo_no_estado(EstadoHumor.Triste, EstadoHumor.Irritado, (bixinho.nutricao.nivel() > 30 && this.nivel() > 30))) {
             return EstadoHumor.Irritado;

@@ -10,12 +10,12 @@ export enum EstadoNutricao {
 export class GerenciadorNutricao extends GerenciadorNivelEstado<EstadoNutricao> {
 
 
-    avancar_estado_buxinxei(): EstadoNutricao {
+    private avancar_estado_buxinxei(): EstadoNutricao {
         if(this.nivel() < 30) { return EstadoNutricao.ComFome; }
         return EstadoNutricao.Buxinxei;
     }
 
-    avancar_estado_comfome(): EstadoNutricao{
+    private avancar_estado_comfome(): EstadoNutricao{
         if(this.gerenciador_transicoes_com_tempo.verificar_tempo_no_estado(EstadoNutricao.ComFome, EstadoNutricao.Faminto, (this.nivel() === 0))) {
             return EstadoNutricao.Faminto;
         }
@@ -27,7 +27,7 @@ export class GerenciadorNutricao extends GerenciadorNivelEstado<EstadoNutricao> 
         return EstadoNutricao.ComFome;
     }
 
-    avancar_estado_faminto(): EstadoNutricao{
+    private avancar_estado_faminto(): EstadoNutricao{
         if(this.nivel() > 70) { return EstadoNutricao.Buxinxei; }
         return EstadoNutricao.Faminto;
     }

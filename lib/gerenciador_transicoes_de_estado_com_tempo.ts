@@ -50,7 +50,6 @@ export class GerenciadorTransicoesComTempo<T extends string | number | symbol> {
         return ((Date.now() - tempo_passado_na_condicao) >= tempo_para_prox * 1000) && condicao;
     }
 
-
     constructor(tempos_transicoes: Array<[T, T, number]>) {
         for (const [de, para, tempoSegundos] of tempos_transicoes) {
             this.setar_tempo_transicao_objetivo(de, para, tempoSegundos);

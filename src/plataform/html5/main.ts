@@ -163,6 +163,7 @@ export class ContextoGraficoHTML5 implements IContextoGrafico {
             case 'e': return Tecla.Tecla_E;
             case 'l': return Tecla.Tecla_L;
             case 's': return Tecla.Tecla_S;
+            case 'p': return Tecla.Tecla_P;
             default: return undefined;
         }
     }

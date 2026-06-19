@@ -1,7 +1,7 @@
 import { type IContextoGrafico, type ITextura, AnimacaoTextura, Botao, Tecla } from '../lib/interfaces_graficas';
 import { Bixinho } from '../lib/bixinho';
 import { GerenciadorTexturasBixinho } from '../lib/gerenciador_texturas_bixinho';
-import { bixinho_estado, prox_do_enum } from '../lib/utils';
+import { bixinho_estado, bixinho_estado_valores, prox_do_enum } from '../lib/utils';
 import { EstadoNutricao } from '../lib/nutricao';
 import { EstadoHigiene } from '../lib/higiene';
 import { EstadoHumor } from '../lib/humor';
@@ -25,6 +25,9 @@ export class Jogo {
     private botaos_basicos: Record<string, Botao> = {} as any;
     private animacoes_basicas: Record<string, AnimacaoTextura> = {} as any;
     private estado: EstadoJogo = EstadoJogo.Ligando;
+
+    private todos_possiveis_estados: string[][];
+    private dbg_combinacao_atual: number;
 
     constructor(
         private cg: IContextoGrafico,
@@ -53,12 +56,27 @@ export class Jogo {
                 .map((x) => x.split("|").map((y) => y.trim()).filter((y) => y != "")),
             cg);
 
+
+        this.todos_possiveis_estados = this.getEnumCombinations(Object.values(EstadoSaude), Object.values(EstadoHumor), Object.values(EstadoEnergia), Object.values(EstadoNutricao), Object.values(EstadoHigiene));
+        this.dbg_combinacao_atual = 0;
+
     }
 
+    getEnumCombinations(...enums: any[][]): any[][] {
+        return enums.reduce((acc, currentEnum) => {
+            return acc.flatMap(accItem =>
+                currentEnum.map(enumValue => [...accItem, enumValue])
+                              );
+        }, [[]]);
+    }
+
+
     private debug() {
-        const texto = JSON.stringify(bixinho_estado(this.bixinho), null, 4);
+        let texto = JSON.stringify(bixinho_estado(this.bixinho), null, 4);
         this.cg.desenhar_texto(texto, 0, 0, 16, 0xFFFFFFFF);
-        console.log(JSON.stringify(bixinho_estado(this.bixinho)));
+
+        texto = JSON.stringify(bixinho_estado_valores(this.bixinho), null, 4);
+        this.cg.desenhar_texto(texto, 50 * this.escala, 0, 16, 0xFFFFFFFF);
 
         if (this.cg.tecla_liberada(Tecla.Tecla_N)) {
             this.bixinho.nutricao.setar_estado_atual(prox_do_enum(EstadoNutricao, this.bixinho.nutricao.estado_atual()));
@@ -75,6 +93,24 @@ export class Jogo {
         if (this.cg.tecla_liberada(Tecla.Tecla_S)) {
             this.bixinho.saude.setar_estado_atual(prox_do_enum(EstadoSaude, this.bixinho.saude.estado_atual()));
         }
+
+    }
+
+    private rodar_todos_estados() {
+
+        this.bixinho.impedir_update = true;
+
+        if (this.cg.tecla_liberada(Tecla.Tecla_P)) {
+            this.dbg_combinacao_atual += 1;
+        }
+        this.dbg_combinacao_atual += 1;
+        this.dbg_combinacao_atual = Math.min(this.dbg_combinacao_atual, this.todos_possiveis_estados.length - 1);
+        const dbg_estado_atual = this.todos_possiveis_estados[this.dbg_combinacao_atual] ?? [[]];
+        this.bixinho.saude.setar_estado_atual((dbg_estado_atual[0] ?? "") as EstadoSaude);
+        this.bixinho.humor.setar_estado_atual((dbg_estado_atual[1] ?? "") as EstadoHumor);
+        this.bixinho.energia.setar_estado_atual((dbg_estado_atual[2] ?? "") as EstadoEnergia);
+        this.bixinho.nutricao.setar_estado_atual((dbg_estado_atual[3] ?? "") as EstadoNutricao);
+        this.bixinho.higiene.setar_estado_atual((dbg_estado_atual[4] ?? "") as EstadoHigiene);
     }
 
     private iniciar_texturas_basicas() {
@@ -140,6 +176,8 @@ export class Jogo {
         if (animacao) {
             animacao.update();
         }
+
+        this.bixinho.update();
     }
 
     public desenhar() {
@@ -160,6 +198,9 @@ export class Jogo {
         const animacao = this.gerenciador_texturas_bixinho.pegar_anim(this.bixinho);
         if (animacao) {
             animacao.desenhar(this.cg, 75, 64, this.escala, 0, 0xFF000000);
+        } else {
+            // console.log(JSON.stringify(bixinho_estado(this.bixinho)));
+            // console.log(",");
         }
     }
 
@@ -187,6 +228,7 @@ export class Jogo {
         this.desenhar_interface();
         this.desenhar_bixinho();
         this.debug();
+        // this.rodar_todos_estados();
     }
 
 }

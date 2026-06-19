@@ -9,12 +9,12 @@ export enum EstadoEnergia {
 
 export class GerenciadorEnergia extends GerenciadorNivelEstado<EstadoEnergia> {
 
-    avancar_estado_carregado(): EstadoEnergia {
+    private avancar_estado_carregado(): EstadoEnergia {
         if(this.nivel() < 20) { return EstadoEnergia.ComSono; }
         return EstadoEnergia.Carregado;
     }
 
-    avancar_estado_comsono(): EstadoEnergia {
+    private avancar_estado_comsono(): EstadoEnergia {
         if(this.gerenciador_transicoes_com_tempo.verificar_tempo_no_estado(EstadoEnergia.ComSono, EstadoEnergia.Exausto, (this.nivel() === 0))) {
             return EstadoEnergia.Exausto;
         }
@@ -26,7 +26,7 @@ export class GerenciadorEnergia extends GerenciadorNivelEstado<EstadoEnergia> {
         return EstadoEnergia.ComSono;
     }
 
-    avancar_estado_exausto(): EstadoEnergia {
+    private avancar_estado_exausto(): EstadoEnergia {
         if(this.nivel() >= 80) { return EstadoEnergia.Carregado }
         return EstadoEnergia.Exausto;
     }
@@ -41,7 +41,7 @@ export class GerenciadorEnergia extends GerenciadorNivelEstado<EstadoEnergia> {
         }
 
         if(estado_atual != prox) {
-            this.gerenciador_transicoes_com_tempo.limpar_tempo_transicao_passado()
+            this.gerenciador_transicoes_com_tempo.limpar_tempo_transicao_passado();
         }
 
         return prox;

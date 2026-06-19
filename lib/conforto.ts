@@ -12,7 +12,7 @@ export enum EstadoConforto {
 
 export class GerenciadorConforto extends GerenciadorNivelEstado<EstadoConforto> {
 
-    avancar_estado_satisfeito(bixinho: Readonly<Bixinho>): EstadoConforto {
+    private avancar_estado_satisfeito(bixinho: Readonly<Bixinho>): EstadoConforto {
         if(bixinho.saude.estado_atual() == EstadoSaude.Doente) {
             return EstadoConforto.Desconfortavel;
         }
@@ -20,7 +20,7 @@ export class GerenciadorConforto extends GerenciadorNivelEstado<EstadoConforto> 
         return EstadoConforto.Satisfeito;
     }
 
-    avancar_estado_desconfortavel(bixinho: Readonly<Bixinho>): EstadoConforto {
+    private avancar_estado_desconfortavel(bixinho: Readonly<Bixinho>): EstadoConforto {
 
         if(this.gerenciador_transicoes_com_tempo.verificar_tempo_no_estado(EstadoConforto.Desconfortavel, EstadoConforto.Satisfeito,
                                                                            (bixinho.energia.estado_atual() === EstadoEnergia.Carregado

@@ -10,12 +10,12 @@ export enum EstadoHigiene {
 export class GerenciadorHigiene extends GerenciadorNivelEstado<EstadoHigiene> {
 
 
-    avancar_estado_limpo(): EstadoHigiene {
+    private avancar_estado_limpo(): EstadoHigiene {
         if(this.nivel() < 30) { return EstadoHigiene.Sujo; }
         return EstadoHigiene.Limpo;
     }
 
-    avancar_estado_sujo(): EstadoHigiene{
+    private avancar_estado_sujo(): EstadoHigiene{
         if(this.gerenciador_transicoes_com_tempo.verificar_tempo_no_estado(EstadoHigiene.Sujo, EstadoHigiene.Sujismundo, (this.nivel() === 0))) {
             return EstadoHigiene.Sujismundo;
         }
@@ -27,7 +27,7 @@ export class GerenciadorHigiene extends GerenciadorNivelEstado<EstadoHigiene> {
         return EstadoHigiene.Sujo;
     }
 
-    avancar_estado_sujismundo(): EstadoHigiene{
+    private avancar_estado_sujismundo(): EstadoHigiene{
         if(this.nivel() > 80) { return EstadoHigiene.Limpo; }
         return EstadoHigiene.Sujismundo;
     }

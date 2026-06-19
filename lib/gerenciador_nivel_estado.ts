@@ -9,7 +9,10 @@ export abstract class GerenciadorNivelEstado<T extends number | string> {
 
     estado_atual(): T { return this._estado_atual; }
     setar_estado_atual(novo_estado: T) { this._estado_atual = novo_estado; }
-    modificar_nivel(em: number) {this._nivel += em;}
+    modificar_nivel(em: number) {
+        this._nivel += em;
+        this._nivel = Math.max(0, Math.min(100, this._nivel));
+    }
     nivel() { return this._nivel; }
 
     abstract avancar_estado(estado_atual:Readonly<T>, bixinho: Readonly<Bixinho>): T;

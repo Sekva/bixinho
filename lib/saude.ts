@@ -18,7 +18,7 @@ export enum  EstadoSaude {
 
 export class GerenciadorSaude extends GerenciadorNivelEstado<EstadoSaude> {
 
-    avancar_estado_doente(bixinho: Readonly<Bixinho>): EstadoSaude {
+    private avancar_estado_doente(bixinho: Readonly<Bixinho>): EstadoSaude {
         //TODO: remedio
         if(bixinho.saude.nivel() > 40 && bixinho.conforto.estado_atual() == EstadoConforto.Satisfeito) {
             return EstadoSaude.Saudavel;
@@ -31,7 +31,7 @@ export class GerenciadorSaude extends GerenciadorNivelEstado<EstadoSaude> {
         return EstadoSaude.Doente;
     }
 
-    avancar_estado_critico(bixinho: Readonly<Bixinho>): EstadoSaude {
+    private avancar_estado_critico(bixinho: Readonly<Bixinho>): EstadoSaude {
         if(bixinho.saude.nivel() >= 20) {
             return EstadoSaude.Doente;
         }
@@ -43,9 +43,9 @@ export class GerenciadorSaude extends GerenciadorNivelEstado<EstadoSaude> {
         return EstadoSaude.Critico;
     }
 
-    avancar_estado_morto(_bixinho: Readonly<Bixinho>): EstadoSaude { return EstadoSaude.Morto; }
+    private avancar_estado_morto(_bixinho: Readonly<Bixinho>): EstadoSaude { return EstadoSaude.Morto; }
 
-    avancar_estado_saudavel(bixinho: Readonly<Bixinho>): EstadoSaude {
+    private avancar_estado_saudavel(bixinho: Readonly<Bixinho>): EstadoSaude {
         if(this.gerenciador_transicoes_com_tempo.verificar_tempo_no_estado(EstadoSaude.Saudavel, EstadoSaude.DoenteFaminto, (bixinho.nutricao.estado_atual() == EstadoNutricao.Faminto))) {
             return EstadoSaude.DoenteFaminto;
         }

@@ -6,6 +6,7 @@ export enum Tecla {
     Tecla_E,
     Tecla_L,
     Tecla_S,
+    Tecla_P,
     Tecla_ESC,
 }
 

@@ -55,6 +55,33 @@ export function bixinho_estado(bixinho: Bixinho) {
     return estado_bixinho;
 }
 
+
+export function bixinho_estado_valores(bixinho: Bixinho) {
+
+    const marca = bixinho.marca;
+    const estagio = bixinho.estagio;
+    const saude = bixinho.saude.nivel();
+    const humor = bixinho.humor.nivel();
+    const energia = bixinho.energia.nivel();
+    const nutricao = bixinho.nutricao.nivel();
+    const higiene = bixinho.higiene.nivel();
+
+    const estado_bixinho_valores = {
+        marca,
+        estagio,
+        saude,
+        humor,
+        energia,
+        nutricao,
+        higiene
+    };
+
+    return estado_bixinho_valores;
+}
+
+
+
+
 export function prox_do_enum<T extends object>(enumObj: T, atual: any): T[keyof T] {
     const itens = obterValoresEnum(enumObj);
     const idx = itens.indexOf(atual) + 1;
